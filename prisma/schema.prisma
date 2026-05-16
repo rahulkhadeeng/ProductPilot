@@ -13,6 +13,12 @@ enum Role {
   ADMIN
 }
 
+enum ProductStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -20,13 +26,15 @@ model User {
   emailVerified DateTime?
   image         String?
   role          Role      @default(USER)
+  isPremium     Boolean   @default(false)
+  isAdmin       Boolean   @default(false)
 
   accounts Account[]
   sessions Session[]
 
   products Product[]
   comments Comment[]
-  votes    Vote[]
+  upvotes  Upvote[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,20 +77,49 @@ model VerificationToken {
 }
 
 model Product {
-  id          String  @id @default(cuid())
-  title       String
-  tagline     String
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  headline    String
   description String
-  websiteUrl  String
-  thumbnail   String?
+  logo        String
+  releaseDate String
+  website     String
+  twitter     String
+  instagram   String
+  rank        Int           @default(0)
+  status      ProductStatus @default(PENDING)
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  comments Comment[]
-  votes    Vote[]
+  categories Category[]
+  images     Image[]
+  comments   Comment[]
+  upvotes    Upvote[]
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
 }
 
 model Comment {
@@ -98,7 +135,7 @@ model Comment {
   createdAt DateTime @default(now())
 }
 
-model Vote {
+model Upvote {
   id String @id @default(cuid())
 
   userId    String
