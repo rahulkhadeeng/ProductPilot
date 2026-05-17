@@ -35,6 +35,7 @@ model User {
   products Product[]
   comments Comment[]
   upvotes  Upvote[]
+  notifications Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -145,4 +146,29 @@ model Upvote {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+}
+
+enum NotificationType {
+  UPVOTE
+  COMMENT
+  ACTIVATED
+  REJECTED
+}
+
+model Notification {
+  id             String             @id @default(cuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body           String
+  profilePicture String
+  productId      String
+  type           NotificationType
+  status         NotificationStatus @default(UNREAD)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 }
