@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  LayoutDashboard,
   LogOut,
   Package,
   Settings,
@@ -56,13 +55,6 @@ export default function AvatarMenu({ session }: AvatarMenuProps) {
           </DropdownMenuLabel>
 
           <DropdownMenuSeparator />
-
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard" className="flex w-full gap-x-2">
-              <LayoutDashboard className="text-xl" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
             <Link href="/my-products" className="flex w-full gap-x-2">

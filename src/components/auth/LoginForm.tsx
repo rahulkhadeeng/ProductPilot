@@ -43,7 +43,7 @@ export function LoginForm({ className, compact = false }: LoginFormProps) {
           variant="outline"
           size="lg"
           className="w-full"
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => signIn("google", { callbackUrl: "/my-products" })}
         >
           <Search className="text-indigo-500" />
           Continue with Google
@@ -54,7 +54,7 @@ export function LoginForm({ className, compact = false }: LoginFormProps) {
           variant="outline"
           size="lg"
           className="w-full"
-          onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+          onClick={() => signIn("github", { callbackUrl: "/my-products" })}
         >
           <Code />
           Continue with GitHub

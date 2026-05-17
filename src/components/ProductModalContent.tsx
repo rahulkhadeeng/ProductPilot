@@ -9,7 +9,7 @@ import {
   PiUploadSimple,
 } from "react-icons/pi";
 import CarouselComponent from "./CarouselComponent";
-import { AvatarFallback, AvatarImage, AvatarShadcn } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Avvvatars from "avvvatars-react";
 import React, { useState } from "react";
 import ShareModal from "./ui/modal/ShareProductModal";
@@ -220,7 +220,7 @@ const ProductModalContent = ({
 
             <div className="border-t border-b py-2">
               <div className="w-full flex items-center gap-4">
-                <AvatarShadcn>
+                <Avatar>
                   {authenticatedUser ? (
                     <>
                       <AvatarImage src={authenticatedUser.user.image} />
@@ -232,7 +232,7 @@ const ProductModalContent = ({
                   ) : (
                     <Avvvatars style="shape" value={currentProduct.name} />
                   )}
-                </AvatarShadcn>
+                </Avatar>
 
                 <textarea
                   value={commentText}
@@ -273,13 +273,13 @@ const ProductModalContent = ({
             <div className="py-10 space-y-8">
               {comments.map((comment: any, idx: string) => (
                 <div key={idx} className="flex gap-4">
-                  <AvatarShadcn className="w-8 h-8">
+                  <Avatar className="w-8 h-8">
                     <AvatarImage src={comment.profile} />
 
                     <AvatarFallback>
                       <Avvvatars value={comment.name} />
                     </AvatarFallback>
-                  </AvatarShadcn>
+                  </Avatar>
 
                   <div className="w-full">
                     <div className="flex justify-between items-center">

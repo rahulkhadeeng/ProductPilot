@@ -1,5 +1,6 @@
 import Navbar from "@/components/navbar/Navbar";
 import { auth } from "@/lib/auth/auth";
+import { getNotifications, getProductsByUserId } from "@/lib/actions";
 
 const HomeLayout = async ({
   children,
@@ -8,12 +9,16 @@ const HomeLayout = async ({
 }>) => {
   const session = await auth();
 
-  // In the future, we will fetch notifications and products here and pass to Navbar
-  // as done in the reference repo.
+  const notifications = await getNotifications();
+  const products = await getProductsByUserId(session?.user?.id || "");
 
   return (
     <div className="flex min-h-full flex-col">
-      <Navbar session={session} />
+      <Navbar 
+        session={session} 
+        notifications={notifications}
+        products={products}
+      />
       {children}
     </div>
   );

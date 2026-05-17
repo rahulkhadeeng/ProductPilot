@@ -21,6 +21,8 @@ import SubmitButton from "./SubmitButton";
 
 type NavbarProps = {
   session: Session | null;
+  notifications?: unknown;
+  products?: unknown;
 };
 
 export default function Navbar({ session }: NavbarProps) {

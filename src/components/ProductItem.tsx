@@ -130,9 +130,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
                 </p>
 
                 <Link
-                  href={`/product/${product.website}`}
-                  target="_blank"
-                  // onClick={handleArrowClick}
+                  href={`/product/${product.slug}`}
                   className="hidden md:flex cursor-pointer"
                 >
                   <CiGlobe className="hover:text-blue-500 transition-all duration-300" />
