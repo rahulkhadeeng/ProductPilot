@@ -696,6 +696,7 @@ export const getProductBySlug = async (slug: string) => {
         slug,
       },
       include: {
+        user: true,
         images: {
           orderBy: {
             updatedAt: "desc",
