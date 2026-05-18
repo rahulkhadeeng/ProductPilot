@@ -64,14 +64,9 @@ export default async function MyProductsPage() {
 
             <div className="mt-10 grid grid-cols-2 items-start gap-x-5 gap-y-10 transition-all sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5">
               {products.map((product) => {
-                const href =
-                  product.status === "ACTIVE"
-                    ? `/product/${product.slug}`
-                    : "/my-products";
-
                 return (
                   <Link
-                    href={href}
+                    href={`/edit/${product.id}`}
                     key={product.id}
                     className="flex flex-col items-center justify-center gap-2 transition-all duration-500 hover:-translate-y-2"
                   >
