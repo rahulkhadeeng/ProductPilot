@@ -499,7 +499,7 @@ export const rejectProduct = async (productId: string, reason: string) => {
       data: {
         userId: product.userId,
         body: `Your product ${product.name} has been rejected. Reason : ${reason}`,
-        type: "ACTIVATED",
+        type: "REJECTED",
         status: "UNREAD",
         profilePicture: product.logo,
         productId: product.id,

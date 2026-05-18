@@ -95,8 +95,7 @@ const Feature = ({
 
       <div className="group-hover/feature:-translate-y-1 transform-gpu transition-all duration-300 flex flex-col w-full">
         <div
-          className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400
-      "
+          className="relative z-10 mb-4 px-10 text-neutral-600 dark:text-neutral-400"
         >
           <Icon
             strokeWidth="1.5"

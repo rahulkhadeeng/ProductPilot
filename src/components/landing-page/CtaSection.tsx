@@ -21,9 +21,7 @@ const CtaSection = () => {
       }}
     >
       <div
-        className="flex flex-col items-center justify-center relative text-center
-      border rounded-2xl w-full py-20 bg-blue-900 shadow 
-      [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))] "
+        className="relative flex w-full flex-col items-center justify-center rounded-2xl border bg-blue-900 py-20 text-center shadow [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))]"
       >
         <h2 className="text-white text-3xl min-[450px]:text-4xl sm:text-5xl font-semibold transition-all">
           From Idea to Launch <br /> Faster Than Ever
@@ -35,8 +33,7 @@ const CtaSection = () => {
         </p>
 
         <button
-          className="group z-10 relative mt-10 px-6 py-1.5 flex transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md text-white bg-indigo-500 font-medium transition-all
-          duration-300  active:scale-90"
+          className="group relative z-10 mt-10 flex transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-indigo-500 px-6 py-1.5 font-medium text-white transition-all duration-300 active:scale-90"
         >
           <span className="group relative z-10 flex items-center gap-2 md:text-lg transition-all">
             Get Started

@@ -26,10 +26,7 @@ const HeroSection = () => {
             🎉
             <span
               className={cn(
-                `ml-2 inline animate-gradient 
-                bg-gradient-to-r from-[#ff8c00] via-[#6b23b4] to-[#ff8c00] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent
-                text-xs md:text-sm font-medium
-                `
+                "ml-2 inline animate-gradient bg-gradient-to-r from-[#ff8c00] via-[#6b23b4] to-[#ff8c00] bg-[length:var(--bg-size)_100%] bg-clip-text text-xs font-medium text-transparent md:text-sm"
               )}
             >
               Introducing ProductSphere
@@ -50,8 +47,7 @@ const HeroSection = () => {
 
         <Link
           href="/products"
-          className="group relative mt-10 px-6 py-1.5 flex transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md text-white bg-indigo-500 font-medium transition-all 
-          duration-300 hover:ring-2 hover:ring-offset-1 hover:ring-indigo-500 active:scale-90"
+          className="group relative mt-10 flex transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-indigo-500 px-6 py-1.5 font-medium text-white transition-all duration-300 hover:ring-2 hover:ring-indigo-500 hover:ring-offset-1 active:scale-90"
         >
           <span className="group relative z-10 flex items-center gap-2 md:text-lg transition-all">
             Discover
@@ -69,8 +65,7 @@ const HeroSection = () => {
         <div className="absolute top-1/2 left-1/2 -z-10 gradient w-full -translate-x-1/2 h-3/4 -translate-y-1/2 inset-0 blur-[10rem]"></div>
 
         <div
-          className="relative mx-auto max-w-5xl rounded-xl lg:rounded-[32px] border border-neutral-200/50 p-2 backdrop-blur-lg border-neutral-300 bg-neutral-200/20 
-        md:p-4 mt-12 mb-10"
+          className="relative mx-auto mb-10 mt-12 max-w-5xl rounded-xl border border-neutral-300 bg-neutral-200/20 p-2 backdrop-blur-lg lg:rounded-[32px] md:p-4"
         >
           <div className="rounded-lg lg:rounded-[24px] border p-2 border-neutral-300 bg-white">
             <Image

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "promote-admin": "tsx prisma/promote-admin.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

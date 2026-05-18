@@ -25,9 +25,7 @@ const AuthContent = () => {
       </div>
 
       <button
-        onClick={() =>
-          signIn("google", { redirect: false }, { prompt: "login" })
-        }
+        onClick={() => signIn("google", { callbackUrl: "/my-products" })}
         className="border rounded-md py-2 mt-4 flex items-center gap-4 px-5 md:px-10 hover:bg-foreground/5 transition-all duration-300 active:scale-90"
       >
         <FcGoogle className="text-xl" />
@@ -35,9 +33,7 @@ const AuthContent = () => {
       </button>
 
       <button
-        onClick={() =>
-          signIn("github", { redirect: false }, { prompt: "login" })
-        }
+        onClick={() => signIn("github", { callbackUrl: "/my-products" })}
         className="border rounded-md py-2 mt-4 flex items-center gap-4 px-5 md:px-10 hover:bg-foreground/5 transition-all duration-300 active:scale-90"
       >
         <FaGithub className="text-xl" />
