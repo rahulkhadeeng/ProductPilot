@@ -67,7 +67,7 @@ function FeaturesGrid() {
             key={idx}
             className="relative bg-gradient-to-b dark:from-neutral-900 from-neutral-100 dark:to-neutral-950 to-white p-6 rounded-3xl overflow-hidden group"
           >
-            <Grid size={20} />
+            <Grid size={20} pattern={feature.pattern} />
 
             <feature.icon className="mb-5 size-8 group-hover:scale-110 transition-all duration-300 will-change-transform transform" />
 
@@ -93,11 +93,11 @@ export const Grid = ({
   size?: number;
 }) => {
   const p = pattern ?? [
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
+    [7, 1],
+    [8, 3],
+    [9, 2],
+    [10, 5],
+    [7, 6],
   ];
   return (
     <div className="pointer-events-none absolute left-1/2 top-0  -ml-20 -mt-2 h-full w-full [mask-image:linear-gradient(white,transparent)]">
@@ -161,40 +161,96 @@ const features = [
     icon: Rocket,
     title: "Launch Ready",
     info: "Effortlessly showcase your product and connect with early adopters.",
+    pattern: [
+      [7, 1],
+      [8, 3],
+      [9, 2],
+      [10, 5],
+      [7, 6],
+    ],
   },
   {
     icon: Users,
     title: "Engaged Community",
     info: "Join a thriving community of product enthusiasts and creators.",
+    pattern: [
+      [8, 2],
+      [10, 1],
+      [7, 4],
+      [9, 6],
+      [10, 5],
+    ],
   },
   {
     icon: Star,
     title: "Trending Insights",
     info: "Discover the hottest products and trends as they gain traction.",
+    pattern: [
+      [9, 1],
+      [7, 3],
+      [10, 2],
+      [8, 5],
+      [9, 6],
+    ],
   },
   {
     icon: MessageCircle,
     title: "Interactive Discussions",
     info: "Encourage feedback and spark conversations with user comments.",
+    pattern: [
+      [10, 1],
+      [8, 2],
+      [7, 5],
+      [9, 4],
+      [10, 6],
+    ],
   },
   {
     icon: Globe,
     title: "Global Reach",
     info: "Promote your product to a worldwide audience of potential users.",
+    pattern: [
+      [7, 2],
+      [9, 1],
+      [10, 4],
+      [8, 6],
+      [9, 5],
+    ],
   },
   {
     icon: Shield,
     title: "Safe and Secure",
     info: "Experience a reliable and secure platform built for creators.",
+    pattern: [
+      [8, 1],
+      [10, 3],
+      [7, 6],
+      [9, 2],
+      [8, 5],
+    ],
   },
   {
     icon: BarChart,
     title: "Analytics Dashboard",
     info: "Track product performance with detailed analytics and user metrics.",
+    pattern: [
+      [9, 3],
+      [7, 1],
+      [10, 6],
+      [8, 4],
+      [9, 5],
+    ],
   },
   {
     icon: Rocket,
     title: "Early Feedback",
     info: "Gather actionable insights from early users to refine your product.",
+    pattern: [
+      [10, 2],
+      [8, 6],
+      [7, 3],
+      [9, 1],
+      [10, 5],
+    ],
   },
 ];

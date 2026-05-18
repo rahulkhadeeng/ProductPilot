@@ -258,25 +258,24 @@ export const getProductById = async (productId: string) => {
 export const isUserAdmin = async () => {
   const authenticatedUser = await auth();
 
-  if (
-    !authenticatedUser ||
-    !authenticatedUser.user ||
-    !authenticatedUser.user.id
-  ) {
-    return;
+  if (!authenticatedUser?.user) {
+    return false;
   }
 
   const userId = authenticatedUser.user.id;
+  const email = authenticatedUser.user.email;
 
-  // get the user
-  const user = await db.user.findUnique({
+  const user = await db.user.findFirst({
     where: {
-      id: userId,
+      OR: [
+        ...(userId ? [{ id: userId }] : []),
+        ...(email ? [{ email }] : []),
+      ],
     },
   });
 
   if (!user) {
-    throw new Error("User not found");
+    return false;
   }
 
   return user.isAdmin;
@@ -285,25 +284,24 @@ export const isUserAdmin = async () => {
 export const isUserPremium = async () => {
   const authenticatedUser = await auth();
 
-  if (
-    !authenticatedUser ||
-    !authenticatedUser.user ||
-    !authenticatedUser.user.id
-  ) {
-    return;
+  if (!authenticatedUser?.user) {
+    return false;
   }
 
   const userId = authenticatedUser.user.id;
+  const email = authenticatedUser.user.email;
 
-  // get the user
-  const user = await db.user.findUnique({
+  const user = await db.user.findFirst({
     where: {
-      id: userId,
+      OR: [
+        ...(userId ? [{ id: userId }] : []),
+        ...(email ? [{ email }] : []),
+      ],
     },
   });
 
   if (!user) {
-    throw new Error("User not found");
+    return false;
   }
 
   return user.isPremium;

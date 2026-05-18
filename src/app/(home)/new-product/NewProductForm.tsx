@@ -1,11 +1,19 @@
 "use client";
 
-import Image from "next/image";
-import { useMemo, useState, useTransition } from "react";
+import confetti from "canvas-confetti";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+import { CiGlobe } from "react-icons/ci";
+import { FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { LuLoader } from "react-icons/lu";
+import { PiCalendar, PiPackage, PiTag, PiTextT, PiXCircleFill } from "react-icons/pi";
 import { toast } from "sonner";
 
+import { ImagesUploader } from "@/components/ImagesUploader";
+import { LogoUploader } from "@/components/LogoUploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,408 +50,615 @@ const categories = [
   "Artificial Intelligence",
 ];
 
-function slugify(value: string) {
+function makeSlug(value: string) {
   return value
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/\./g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
 
+function StepShell({
+  children,
+  className = "space-y-10",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: "100%" }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: "-100%" }}
+      transition={{ duration: 0.3 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function NewProductForm() {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [headline, setHeadline] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [logo, setLogo] = useState("");
-  const [imageUrlsText, setImageUrlsText] = useState("");
+  const [uploadedLogoUrl, setUploadedLogoUrl] = useState("");
+  const [uploadedProductImages, setUploadedProductImages] = useState<string[]>(
+    []
+  );
   const [releaseDate, setReleaseDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
   const [website, setWebsite] = useState("");
   const [twitter, setTwitter] = useState("");
   const [instagram, setInstagram] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const slug = useMemo(() => slugify(name), [name]);
-  const imageUrls = useMemo(
-    () =>
-      imageUrlsText
-        .split(/\r?\n/)
-        .map((url) => url.trim())
-        .filter(Boolean),
-    [imageUrlsText]
-  );
-
-  const toggleCategory = (category: string) => {
-    setSelectedCategories((current) => {
-      if (current.includes(category)) {
-        return current.filter((item) => item !== category);
-      }
-
-      if (current.length === 3) {
-        toast.error("Choose up to 3 categories.");
-        return current;
-      }
-
-      return [...current, category];
-    });
+  const showValidation = (message: string) => {
+    toast(
+      <div className="mx-auto flex items-center gap-4">
+        <PiXCircleFill className="text-3xl text-red-500" />
+        <div className="text-md font-semibold">{message}</div>
+      </div>,
+      { position: "top-right" }
+    );
   };
 
-  const validateCurrentStep = () => {
+  const nextStep = useCallback(() => {
     if (step === 1 && name.trim().length < 4) {
-      toast.error("Enter at least 4 characters for the product name.");
-      return false;
+      showValidation("Please enter at least 4 characters for the product name.");
+      return;
     }
 
     if (step === 2 && selectedCategories.length < 1) {
-      toast.error("Select at least one category.");
-      return false;
+      showValidation("Please select at least 1 category for the product.");
+      return;
     }
 
     if (step === 3 && headline.trim().length < 10) {
-      toast.error("Enter at least 10 characters for the headline.");
-      return false;
+      showValidation("Please enter at least 10 characters for the headline.");
+      return;
     }
 
     if (step === 3 && description.trim().length < 20) {
-      toast.error("Enter at least 20 characters for the description.");
-      return false;
-    }
-
-    if (step === 4 && !logo.trim()) {
-      toast.error("Add a logo image URL.");
-      return false;
-    }
-
-    if (step === 4 && imageUrls.length < 1) {
-      toast.error("Add at least one gallery image URL.");
-      return false;
-    }
-
-    if (step === 5 && !website.trim()) {
-      toast.error("Add the product website URL.");
-      return false;
-    }
-
-    return true;
-  };
-
-  const continueToNextStep = () => {
-    if (!validateCurrentStep()) {
+      showValidation("Please enter at least 20 characters for the description.");
       return;
     }
 
-    setStep((current) => Math.min(current + 1, 6));
-  };
-
-  const submitProduct = () => {
-    if (!validateCurrentStep()) {
+    if (step === 4 && !uploadedLogoUrl) {
+      showValidation("Please upload a logo for the product.");
       return;
     }
 
-    startTransition(async () => {
+    if (step === 4 && uploadedProductImages.length < 1) {
+      showValidation("Please upload at least 1 image for the product.");
+      return;
+    }
+
+    if (step === 5 && !releaseDate) {
+      showValidation("Please select a release date.");
+      return;
+    }
+
+    if (step === 6 && !website && !twitter && !instagram) {
+      showValidation("Please enter at least one link for the product.");
+      return;
+    }
+
+    setStep((current) => current + 1);
+  }, [
+    step,
+    name,
+    selectedCategories,
+    headline,
+    description,
+    uploadedLogoUrl,
+    uploadedProductImages,
+    releaseDate,
+    website,
+    twitter,
+    instagram,
+  ]);
+
+  const prevStep = useCallback(() => {
+    setStep((current) => current - 1);
+  }, []);
+
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const productName = event.target.value.slice(0, 30);
+    setName(productName);
+    setSlug(makeSlug(productName));
+  };
+
+  const handleCategoryToggle = (category: string) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories((current) =>
+        current.filter((item) => item !== category)
+      );
+      return;
+    }
+
+    if (selectedCategories.length < 3) {
+      setSelectedCategories((current) => [...current, category]);
+      return;
+    }
+
+    toast.error("You can select up to 3 categories.", {
+      position: "top-right",
+    });
+  };
+
+  const submitAnotherProduct = () => {
+    setStep(1);
+    setName("");
+    setSlug("");
+    setSelectedCategories([]);
+    setHeadline("");
+    setDescription("");
+    setUploadedLogoUrl("");
+    setUploadedProductImages([]);
+    setReleaseDate(new Date().toISOString().slice(0, 10));
+    setWebsite("");
+    setTwitter("");
+    setInstagram("");
+  };
+
+  const submitProduct = async () => {
+    setLoading(true);
+
+    try {
       const product = await createProduct({
-        name: name.trim(),
+        name,
         slug,
-        headline: headline.trim(),
-        description: description.trim(),
-        logo: logo.trim(),
-        releaseDate: releaseDate ? format(new Date(releaseDate), "dd/MM/yyyy") : "",
-        website: website.trim(),
-        twitter: twitter.trim(),
-        instagram: instagram.trim(),
-        images: imageUrls,
+        headline,
+        description,
+        logo: uploadedLogoUrl,
+        releaseDate: releaseDate
+          ? format(new Date(releaseDate), "dd/MM/yyyy")
+          : "",
+        website,
+        twitter,
+        instagram,
+        images: uploadedProductImages,
         category: selectedCategories,
       });
 
       if (!product) {
-        toast.error("Product submission failed. Check the details and try again.");
+        toast.error("Product submission failed.", { position: "top-right" });
         return;
       }
 
-      setSubmitted(true);
-      toast.success("Product submitted for review.");
-    });
+      setStep(8);
+    } catch (error) {
+      console.error(error);
+      toast.error("Product submission failed.", { position: "top-right" });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (submitted) {
-    return (
-      <div className="mx-auto flex max-w-3xl flex-col items-start gap-5 px-6 py-16">
-        <h1 className="text-4xl font-semibold">Product submitted</h1>
-        <p className="text-xl font-light leading-8 text-muted-foreground">
-          Your product is pending review. Once approved, it will appear in the
-          product feed.
-        </p>
+  useEffect(() => {
+    if (step !== 8) {
+      return;
+    }
 
-        <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={() => router.push("/products")}>Browse products</Button>
-          <Button variant="outline" onClick={() => window.location.reload()}>
-            Submit another product
-          </Button>
-        </div>
-      </div>
-    );
-  }
+    const end = Date.now() + 3000;
+    const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+
+    const frame = () => {
+      if (Date.now() > end) {
+        return;
+      }
+
+      confetti({
+        particleCount: 2,
+        angle: 60,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 0, y: 0.5 },
+        colors,
+      });
+      confetti({
+        particleCount: 2,
+        angle: 120,
+        spread: 55,
+        startVelocity: 60,
+        origin: { x: 1, y: 0.5 },
+        colors,
+      });
+
+      requestAnimationFrame(frame);
+    };
+
+    frame();
+  }, [step]);
 
   return (
-    <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center px-6 py-8 md:py-20">
-      <div className="w-full max-w-5xl overflow-hidden">
-        <div className="mb-10 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-semibold">New product</h1>
-            <p className="mt-4 text-xl font-light leading-8 text-muted-foreground">
-              Showcase your product to the community. Submissions are reviewed
-              before they go live.
-            </p>
-          </div>
-
-          <div className="rounded-md border px-3 py-2 text-sm font-medium text-muted-foreground">
-            Step {step} / 6
-          </div>
-        </div>
-
+    <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center py-8 md:py-20">
+      <div className="w-full overflow-hidden px-8 md:mx-auto md:w-4/5">
         {step === 1 && (
-          <section className="space-y-8">
-            <div>
-              <label className="font-medium" htmlFor="product-name">
-                Name of the product
-              </label>
+          <StepShell>
+            <div className="flex items-center gap-3">
+              <PiPackage className="text-4xl text-indigo-500" />
+              <h1 className="text-4xl font-semibold">New product</h1>
+            </div>
+            <p className="mt-4 text-xl font-light leading-8">
+              Ready to showcase your product to the world? You came to the right
+              place. Follow the steps below to get started.
+            </p>
+
+            <div className="mt-10">
+              <h2 className="font-medium">Name of the Product</h2>
               <Input
-                id="product-name"
+                type="text"
                 value={name}
                 maxLength={30}
-                className="mt-2 h-11"
-                onChange={(event) => setName(event.target.value.slice(0, 30))}
+                className="mt-2 h-11 rounded-md"
+                onChange={handleNameChange}
               />
-              <p className="mt-2 text-sm text-gray-500">{name.length} / 30</p>
+              <div className="mt-2 text-sm text-gray-500">{name.length} / 30</div>
             </div>
 
-            <div>
-              <label className="font-medium" htmlFor="product-slug">
-                Slug
-              </label>
+            <div className="mt-10">
+              <h2 className="font-medium">
+                Slug (Url) - This will be used to create a unique URL for your
+                product
+              </h2>
               <Input
-                id="product-slug"
+                type="text"
                 value={slug}
+                className="mt-2 h-11 rounded-md"
                 readOnly
-                className="mt-2 h-11"
               />
             </div>
-          </section>
+          </StepShell>
         )}
 
         {step === 2 && (
-          <section className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-semibold">Choose categories</h2>
-              <p className="mt-3 text-muted-foreground">
-                Select 1 to 3 categories that best describe the product.
-              </p>
+          <StepShell>
+            <div className="flex items-center gap-3">
+              <PiTag className="text-4xl text-indigo-500" />
+              <h1 className="text-4xl font-semibold">
+                What category does your product belong to?
+              </h1>
             </div>
+            <p className="mt-4 text-xl font-light leading-8">
+              Choose at least 1 category that best fits your product. This will
+              help people discover your product.
+            </p>
 
-            <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-              {categories.map((category) => {
-                const selected = selectedCategories.includes(category);
-
-                return (
-                  <button
-                    key={category}
+            <div className="mt-10">
+              <h2 className="font-medium">Select Categories</h2>
+              <div className="grid grid-cols-2 items-center justify-center gap-2 pt-4 md:grid-cols-4">
+                {categories.map((category) => (
+                  <motion.button
                     type="button"
-                    onClick={() => toggleCategory(category)}
-                    className={`rounded-full border px-3 py-2 text-sm transition-all active:scale-95 ${
-                      selected
-                        ? "border-indigo-500 bg-indigo-500 text-white"
-                        : "bg-white hover:border-indigo-300"
-                    }`}
+                    key={category}
+                    className="flex rounded-full border"
+                    onClick={() => handleCategoryToggle(category)}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {category}
-                  </button>
-                );
-              })}
+                    <span
+                      className={`w-full cursor-pointer p-2 text-center text-xs md:text-sm ${
+                        selectedCategories.includes(category)
+                          ? "rounded-full bg-[#ff6154] text-white"
+                          : "text-black"
+                      }`}
+                    >
+                      {category}
+                    </span>
+                  </motion.button>
+                ))}
+              </div>
             </div>
-          </section>
+          </StepShell>
         )}
 
         {step === 3 && (
-          <section className="space-y-8">
-            <div>
-              <label className="font-medium" htmlFor="headline">
-                Headline
-              </label>
+          <StepShell>
+            <div className="flex items-center gap-3">
+              <PiTextT className="text-4xl text-indigo-500" />
+              <h1 className="text-4xl font-semibold">Product Details</h1>
+            </div>
+            <p className="mt-4 text-xl font-light leading-8">
+              Keep it simple and clear. Describe your product in a way that
+              makes it easy for people to understand what it does.
+            </p>
+
+            <div className="mt-10">
+              <h2 className="font-medium">Headline</h2>
               <Input
-                id="headline"
+                type="text"
                 value={headline}
-                maxLength={70}
-                className="mt-2 h-11"
+                className="mt-2 h-11 rounded-md"
                 onChange={(event) =>
                   setHeadline(event.target.value.slice(0, 70))
                 }
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <div className="mt-1 text-sm text-gray-500">
                 {headline.length} / 70
-              </p>
+              </div>
             </div>
 
-            <div>
-              <label className="font-medium" htmlFor="description">
-                Short description
-              </label>
+            <div className="mt-10">
+              <h2 className="font-medium">Short Description</h2>
               <Textarea
-                id="description"
-                value={description}
+                className="mt-2 min-h-48 rounded-md"
                 maxLength={300}
-                className="mt-2 min-h-40"
+                value={description}
                 onChange={(event) =>
                   setDescription(event.target.value.slice(0, 300))
                 }
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <div className="mt-1 text-sm text-gray-500">
                 {description.length} / 300
-              </p>
+              </div>
             </div>
-          </section>
+          </StepShell>
         )}
 
         {step === 4 && (
-          <section className="space-y-8">
-            <div>
-              <label className="font-medium" htmlFor="logo">
-                Logo image URL
-              </label>
-              <Input
-                id="logo"
-                value={logo}
-                placeholder="https://..."
-                className="mt-2 h-11"
-                onChange={(event) => setLogo(event.target.value)}
-              />
+          <StepShell>
+            <h1 className="text-4xl font-semibold">
+              Add images to showcase your product
+            </h1>
+            <p className="mt-4 text-xl font-light leading-8">
+              Include images that best represent your product. This helps people
+              understand what your product looks like.
+            </p>
+
+            <div className="mt-10">
+              <h2 className="font-medium">Logo</h2>
+              {uploadedLogoUrl ? (
+                <div className="mt-2 flex flex-wrap items-end gap-4">
+                  <Image
+                    src={uploadedLogoUrl}
+                    alt="Product logo"
+                    width={1000}
+                    height={1000}
+                    className="h-40 w-40 rounded-md object-cover"
+                  />
+                  <Button variant="outline" onClick={() => setUploadedLogoUrl("")}>
+                    Replace logo
+                  </Button>
+                </div>
+              ) : (
+                <LogoUploader
+                  endpoint="productLogo"
+                  onChange={(url) => {
+                    if (url) {
+                      setUploadedLogoUrl(url);
+                    }
+                  }}
+                />
+              )}
             </div>
 
-            {logo && (
-              <Image
-                src={logo}
-                alt="Product logo preview"
-                width={160}
-                height={160}
-                className="h-40 w-40 rounded-md border object-cover"
-              />
-            )}
-
-            <div>
-              <label className="font-medium" htmlFor="gallery">
-                Gallery image URLs
-              </label>
-              <Textarea
-                id="gallery"
-                value={imageUrlsText}
-                placeholder={"https://...\nhttps://..."}
-                className="mt-2 min-h-36"
-                onChange={(event) => setImageUrlsText(event.target.value)}
-              />
-              <p className="mt-2 text-sm text-gray-500">
-                Add one URL per line. UploadThing will replace this placeholder
-                in the upload phase.
-              </p>
+            <div className="mt-4">
+              <div className="font-medium">
+                Product Images (upload at least 1 image)
+              </div>
+              {uploadedProductImages.length > 0 ? (
+                <div className="mt-2 space-y-4">
+                  <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+                    {uploadedProductImages.map((url) => (
+                      <Image
+                        key={url}
+                        priority
+                        src={url}
+                        alt="Uploaded Product Image"
+                        width={200}
+                        height={200}
+                        className="h-40 w-full rounded-md object-cover"
+                      />
+                    ))}
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setUploadedProductImages([])}
+                  >
+                    Replace images
+                  </Button>
+                </div>
+              ) : (
+                <ImagesUploader
+                  endpoint="productImages"
+                  onChange={setUploadedProductImages}
+                />
+              )}
             </div>
-          </section>
+          </StepShell>
         )}
 
         {step === 5 && (
-          <section className="space-y-8">
-            <div>
-              <label className="font-medium" htmlFor="release-date">
-                Release date
-              </label>
+          <StepShell className="space-y-5">
+            <div className="flex items-center gap-3">
+              <PiCalendar className="text-4xl text-indigo-500" />
+              <h1 className="text-4xl font-semibold">Release Date</h1>
+            </div>
+            <p className="mt-4 text-xl font-light leading-8">
+              When will your product be available to the public? Select a date
+              to continue.
+            </p>
+
+            <div className="mt-10 max-w-sm">
+              <h2 className="pb-4 font-medium">Release Date</h2>
               <Input
-                id="release-date"
                 type="date"
                 value={releaseDate}
-                className="mt-2 h-11"
+                min={new Date().toISOString().slice(0, 10)}
+                className="h-11"
                 onChange={(event) => setReleaseDate(event.target.value)}
               />
             </div>
+          </StepShell>
+        )}
 
-            <div>
-              <label className="font-medium" htmlFor="website">
-                Website
-              </label>
+        {step === 6 && (
+          <StepShell>
+            <h1 className="text-4xl font-semibold">Additional Links</h1>
+            <p className="mt-4 text-xl font-light leading-8">
+              Add links to your product&apos;s website, social media, and other
+              platforms.
+            </p>
+
+            <div className="mt-10">
+              <div className="flex items-center gap-x-2 font-medium">
+                <CiGlobe className="text-2xl text-gray-600" />
+                <h2 className="text-xl">Website</h2>
+              </div>
               <Input
-                id="website"
+                type="text"
                 value={website}
+                className="mt-2 h-11 rounded-md"
                 placeholder="https://www.yourdomain.com"
-                className="mt-2 h-11"
                 onChange={(event) => setWebsite(event.target.value)}
               />
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label className="font-medium" htmlFor="twitter">
-                  Twitter
-                </label>
-                <Input
-                  id="twitter"
-                  value={twitter}
-                  placeholder="https://twitter.com/..."
-                  className="mt-2 h-11"
-                  onChange={(event) => setTwitter(event.target.value)}
-                />
+            <div className="mt-10">
+              <div className="flex items-center gap-x-2 font-medium">
+                <FaXTwitter className="text-2xl" />
+                <h2 className="text-xl">Twitter</h2>
               </div>
-
-              <div>
-                <label className="font-medium" htmlFor="instagram">
-                  Instagram
-                </label>
-                <Input
-                  id="instagram"
-                  value={instagram}
-                  placeholder="https://instagram.com/..."
-                  className="mt-2 h-11"
-                  onChange={(event) => setInstagram(event.target.value)}
-                />
-              </div>
+              <Input
+                placeholder="https://www.twitter.com"
+                type="text"
+                className="mt-2 h-11 rounded-md"
+                value={twitter}
+                onChange={(event) => setTwitter(event.target.value)}
+              />
             </div>
-          </section>
+
+            <div className="mt-10">
+              <div className="flex items-center gap-x-2 font-medium">
+                <FaInstagram className="text-2xl" />
+                <h2 className="text-xl">Instagram</h2>
+              </div>
+              <Input
+                placeholder="https://www.instagram.com/"
+                type="text"
+                className="mt-2 h-11 rounded-md"
+                value={instagram}
+                onChange={(event) => setInstagram(event.target.value)}
+              />
+            </div>
+          </StepShell>
         )}
 
-        {step === 6 && (
-          <section className="space-y-6">
-            <h2 className="text-3xl font-semibold">Review and submit</h2>
+        {step === 7 && (
+          <StepShell className="space-y-5">
+            <h1 className="text-4xl font-semibold">Review and submit</h1>
+            <p className="mt-4 text-xl font-light leading-8">
+              Review the details of your product and submit it to the world.
+              Your product will be reviewed before it goes live.
+            </p>
 
-            <div className="grid gap-6 rounded-md border p-5 md:grid-cols-2">
-              <ReviewItem label="Name" value={name} />
-              <ReviewItem label="Slug" value={slug} />
-              <ReviewItem label="Categories" value={selectedCategories.join(", ")} />
+            <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2">
+              <ReviewItem label="Name of the product" value={name} />
+              <ReviewItem label="Slug (URL)" value={slug} />
+              <ReviewItem label="Category" value={selectedCategories.join(", ")} />
+              <ReviewItem label="Website URL" value={website} />
               <ReviewItem label="Headline" value={headline} />
-              <ReviewItem label="Description" value={description} />
-              <ReviewItem label="Release date" value={releaseDate} />
-              <ReviewItem label="Website" value={website} />
-              <ReviewItem label="Images" value={`${imageUrls.length} image(s)`} />
+              <ReviewItem label="Short description" value={description} />
+              <ReviewItem label="Twitter" value={twitter} />
+              <ReviewItem label="Instagram" value={instagram} />
+              <ReviewItem
+                label="Release date - Pending Approval"
+                value={
+                  releaseDate
+                    ? new Date(releaseDate).toDateString()
+                    : "Not specified"
+                }
+              />
+
+              <div>
+                <div className="font-semibold">Product Images</div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {uploadedProductImages.map((url) => (
+                    <Image
+                      key={url}
+                      priority
+                      src={url}
+                      alt="Uploaded Product Image"
+                      width={112}
+                      height={112}
+                      className="h-28 w-28 rounded-md object-cover"
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-          </section>
+          </StepShell>
         )}
 
-        <div className="mt-10 flex items-center justify-between">
-          <Button
-            variant="outline"
-            disabled={step === 1 || isPending}
-            onClick={() => setStep((current) => Math.max(current - 1, 1))}
-          >
-            Previous
-          </Button>
+        {step === 8 && (
+          <StepShell className="flex flex-col items-start gap-5">
+            <div className="text-4xl font-semibold">Congratulations</div>
+            <div className="mt-4 text-xl font-light leading-8">
+              Your product has been successfully submitted. Our team will review
+              it and get back to you soon.
+            </div>
 
-          {step === 6 ? (
-            <Button disabled={isPending} onClick={submitProduct}>
-              {isPending ? "Submitting..." : "Submit"}
-            </Button>
-          ) : (
-            <Button onClick={continueToNextStep}>Continue</Button>
-          )}
-        </div>
+            <div className="flex flex-wrap items-center gap-5">
+              <button
+                onClick={() => {
+                  window.location.href = "/my-products";
+                }}
+                className="mt-4 flex w-60 cursor-pointer items-center justify-center rounded bg-[#ff6154] px-4 py-2 text-white transition-all duration-300 hover:bg-orange-600"
+              >
+                Go to your products
+              </button>
+
+              <button
+                onClick={submitAnotherProduct}
+                className="mt-4 flex w-60 cursor-pointer items-center justify-center rounded border px-4 py-2 text-[#ff6154] transition-all duration-300 hover:bg-foreground/5"
+              >
+                Submit another product
+              </button>
+            </div>
+          </StepShell>
+        )}
+
+        {step !== 8 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mt-10 flex items-center justify-between"
+          >
+            {step !== 1 ? (
+              <Button variant="outline" onClick={prevStep}>
+                Previous
+              </Button>
+            ) : (
+              <div />
+            )}
+
+            {step === 7 ? (
+              <button
+                onClick={submitProduct}
+                className="mt-4 flex items-center gap-2 rounded-md bg-[#ff6154] px-4 py-2 text-white transition-all duration-300 hover:bg-orange-600"
+              >
+                Submit
+                {loading && <LuLoader className="h-5 w-5 animate-spin" />}
+              </button>
+            ) : (
+              <button
+                onClick={nextStep}
+                className="mt-4 rounded-md bg-[#ff6154] px-4 py-2 text-white transition-all duration-300 hover:bg-orange-600"
+              >
+                Continue
+              </button>
+            )}
+          </motion.div>
+        )}
       </div>
     </div>
   );
@@ -452,8 +667,8 @@ export default function NewProductForm() {
 function ReviewItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <h3 className="font-semibold">{label}</h3>
-      <p className="mt-2 break-words text-gray-600">{value || "Not provided"}</p>
+      <h2 className="font-semibold">{label}</h2>
+      <p className="mt-2 break-words text-gray-600">{value || "Not specified"}</p>
     </div>
   );
 }
