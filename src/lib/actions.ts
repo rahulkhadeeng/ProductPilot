@@ -1,20 +1,33 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+
 import { auth } from "@/lib/auth/auth";
 import { prisma as db } from "./prisma";
+import {
+  productSubmissionSchema,
+  type ProductSubmissionInput,
+} from "./product-validation";
 
-interface ProductData {
-  name: string;
-  slug: string;
-  headline: string;
-  description: string;
-  logo: string;
-  releaseDate: string;
-  website: string;
-  twitter: string;
-  instagram: string;
-  images: string[];
-  category: string[];
+type ProductData = ProductSubmissionInput;
+
+type CreateProductResult =
+  | {
+      success: true;
+      product: {
+        id: string;
+        slug: string;
+        status: string;
+      };
+    }
+  | {
+      success: false;
+      error: string;
+      fieldErrors?: Partial<Record<keyof ProductData, string[]>>;
+    };
+
+interface UpdateProductData extends ProductData {
   rank?: number;
 }
 
@@ -30,32 +43,75 @@ export const createProduct = async ({
   instagram,
   images,
   category,
-}: ProductData) => {
+}: ProductData): Promise<CreateProductResult> => {
   try {
     const authenticatedUser = await auth();
 
-    if (!authenticatedUser) {
+    if (!authenticatedUser?.user?.id) {
       throw new Error("You must be signed in to submit a Product");
     }
 
-    const userId = authenticatedUser.user?.id;
+    const parsed = productSubmissionSchema.safeParse({
+      name,
+      slug,
+      headline,
+      description,
+      logo,
+      releaseDate,
+      website,
+      twitter,
+      instagram,
+      images,
+      category,
+    });
+
+    if (!parsed.success) {
+      return {
+        success: false,
+        error:
+          parsed.error.issues[0]?.message ??
+          "Please check the product details.",
+        fieldErrors: parsed.error.flatten().fieldErrors,
+      };
+    }
+
+    const existingProduct = await db.product.findUnique({
+      where: {
+        slug: parsed.data.slug,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (existingProduct) {
+      return {
+        success: false,
+        error: "That product slug is already taken. Try a different name.",
+        fieldErrors: {
+          slug: ["That product slug is already taken. Try a different name."],
+        },
+      };
+    }
+
+    const userId = authenticatedUser.user.id;
 
     const product = await db.product.create({
       data: {
-        name,
+        name: parsed.data.name,
         rank: 0,
-        slug,
-        headline,
-        description,
-        logo,
-        releaseDate,
-        website,
-        twitter,
-        instagram,
+        slug: parsed.data.slug,
+        headline: parsed.data.headline,
+        description: parsed.data.description,
+        logo: parsed.data.logo,
+        releaseDate: parsed.data.releaseDate,
+        website: parsed.data.website,
+        twitter: parsed.data.twitter,
+        instagram: parsed.data.instagram,
         status: "PENDING",
 
         categories: {
-          connectOrCreate: category.map((name) => ({
+          connectOrCreate: parsed.data.category.map((name) => ({
             where: {
               name,
             },
@@ -67,7 +123,7 @@ export const createProduct = async ({
 
         images: {
           createMany: {
-            data: images.map((image) => ({ url: image })),
+            data: parsed.data.images.map((image) => ({ url: image })),
           },
         },
 
@@ -79,10 +135,40 @@ export const createProduct = async ({
       },
     });
 
-    return product;
+    revalidatePath("/my-products");
+    revalidatePath("/admin");
+
+    return {
+      success: true,
+      product: {
+        id: product.id,
+        slug: product.slug,
+        status: product.status,
+      },
+    };
   } catch (error) {
     console.error(error);
-    return null;
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return {
+        success: false,
+        error: "That product slug is already taken. Try a different name.",
+        fieldErrors: {
+          slug: ["That product slug is already taken. Try a different name."],
+        },
+      };
+    }
+
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Product submission failed.",
+    };
   }
 };
 
@@ -99,7 +185,7 @@ export const updateProduct = async (
     twitter,
     instagram,
     images,
-  }: ProductData
+  }: UpdateProductData
 ) => {
   try {
     const authenticatedUser = await auth();

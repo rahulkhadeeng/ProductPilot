@@ -4,6 +4,7 @@ import confetti from "canvas-confetti";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { CiGlobe } from "react-icons/ci";
 import { FaInstagram } from "react-icons/fa";
@@ -18,6 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createProduct } from "@/lib/actions";
+import {
+  firstProductValidationError,
+  makeProductSlug,
+  PRODUCT_LIMITS,
+  type ProductSubmissionInput,
+} from "@/lib/product-validation";
 
 const categories = [
   "Media",
@@ -50,16 +57,15 @@ const categories = [
   "Artificial Intelligence",
 ];
 
-function makeSlug(value: string) {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/\./g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-}
+const submissionSteps = [
+  "Basics",
+  "Categories",
+  "Details",
+  "Media",
+  "Release",
+  "Links",
+  "Review",
+];
 
 function StepShell({
   children,
@@ -82,6 +88,7 @@ function StepShell({
 }
 
 export default function NewProductForm() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -99,6 +106,7 @@ export default function NewProductForm() {
   const [twitter, setTwitter] = useState("");
   const [instagram, setInstagram] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submissionError, setSubmissionError] = useState("");
 
   const showValidation = (message: string) => {
     toast(
@@ -109,6 +117,35 @@ export default function NewProductForm() {
       { position: "top-right" }
     );
   };
+
+  const getPayload = useCallback(
+    (): ProductSubmissionInput => ({
+      name,
+      slug,
+      headline,
+      description,
+      logo: uploadedLogoUrl,
+      releaseDate,
+      website,
+      twitter,
+      instagram,
+      images: uploadedProductImages,
+      category: selectedCategories,
+    }),
+    [
+      name,
+      slug,
+      headline,
+      description,
+      uploadedLogoUrl,
+      releaseDate,
+      website,
+      twitter,
+      instagram,
+      uploadedProductImages,
+      selectedCategories,
+    ]
+  );
 
   const nextStep = useCallback(() => {
     if (step === 1 && name.trim().length < 4) {
@@ -141,6 +178,11 @@ export default function NewProductForm() {
       return;
     }
 
+    if (step === 4 && uploadedProductImages.length > PRODUCT_LIMITS.imageMax) {
+      showValidation("You can upload up to 5 product images.");
+      return;
+    }
+
     if (step === 5 && !releaseDate) {
       showValidation("Please select a release date.");
       return;
@@ -149,6 +191,15 @@ export default function NewProductForm() {
     if (step === 6 && !website && !twitter && !instagram) {
       showValidation("Please enter at least one link for the product.");
       return;
+    }
+
+    if (step === 6) {
+      const validationMessage = firstProductValidationError(getPayload());
+
+      if (validationMessage) {
+        showValidation(validationMessage);
+        return;
+      }
     }
 
     setStep((current) => current + 1);
@@ -164,6 +215,7 @@ export default function NewProductForm() {
     website,
     twitter,
     instagram,
+    getPayload,
   ]);
 
   const prevStep = useCallback(() => {
@@ -173,7 +225,8 @@ export default function NewProductForm() {
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const productName = event.target.value.slice(0, 30);
     setName(productName);
-    setSlug(makeSlug(productName));
+    setSlug(makeProductSlug(productName));
+    setSubmissionError("");
   };
 
   const handleCategoryToggle = (category: string) => {
@@ -207,37 +260,45 @@ export default function NewProductForm() {
     setWebsite("");
     setTwitter("");
     setInstagram("");
+    setSubmissionError("");
   };
 
   const submitProduct = async () => {
+    if (loading) {
+      return;
+    }
+
+    const payload = {
+      ...getPayload(),
+      releaseDate: releaseDate ? format(new Date(releaseDate), "dd/MM/yyyy") : "",
+    };
+    const validationMessage = firstProductValidationError(payload);
+
+    if (validationMessage) {
+      showValidation(validationMessage);
+      return;
+    }
+
     setLoading(true);
+    setSubmissionError("");
 
     try {
-      const product = await createProduct({
-        name,
-        slug,
-        headline,
-        description,
-        logo: uploadedLogoUrl,
-        releaseDate: releaseDate
-          ? format(new Date(releaseDate), "dd/MM/yyyy")
-          : "",
-        website,
-        twitter,
-        instagram,
-        images: uploadedProductImages,
-        category: selectedCategories,
-      });
+      const result = await createProduct(payload);
 
-      if (!product) {
-        toast.error("Product submission failed.", { position: "top-right" });
+      if (!result.success) {
+        setSubmissionError(result.error);
+        toast.error(result.error, { position: "top-right" });
         return;
       }
 
+      toast.success("Product submitted for review.", { position: "top-right" });
       setStep(8);
     } catch (error) {
       console.error(error);
-      toast.error("Product submission failed.", { position: "top-right" });
+      const message =
+        error instanceof Error ? error.message : "Product submission failed.";
+      setSubmissionError(message);
+      toast.error(message, { position: "top-right" });
     } finally {
       setLoading(false);
     }
@@ -282,6 +343,25 @@ export default function NewProductForm() {
   return (
     <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center py-8 md:py-20">
       <div className="w-full overflow-hidden px-8 md:mx-auto md:w-4/5">
+        {step < 8 && (
+          <div className="mb-10">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <span>
+                Step {step} of {submissionSteps.length}
+              </span>
+              <span>{submissionSteps[step - 1]}</span>
+            </div>
+            <div className="mt-3 h-2 rounded-full bg-gray-100">
+              <div
+                className="h-full rounded-full bg-[#ff6154] transition-all duration-300"
+                style={{
+                  width: `${(step / submissionSteps.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         {step === 1 && (
           <StepShell>
             <div className="flex items-center gap-3">
@@ -302,7 +382,9 @@ export default function NewProductForm() {
                 className="mt-2 h-11 rounded-md"
                 onChange={handleNameChange}
               />
-              <div className="mt-2 text-sm text-gray-500">{name.length} / 30</div>
+              <div className="mt-2 text-sm text-gray-500">
+                {name.length} / {PRODUCT_LIMITS.nameMax}
+              </div>
             </div>
 
             <div className="mt-10">
@@ -382,7 +464,7 @@ export default function NewProductForm() {
                 }
               />
               <div className="mt-1 text-sm text-gray-500">
-                {headline.length} / 70
+                {headline.length} / {PRODUCT_LIMITS.headlineMax}
               </div>
             </div>
 
@@ -390,14 +472,14 @@ export default function NewProductForm() {
               <h2 className="font-medium">Short Description</h2>
               <Textarea
                 className="mt-2 min-h-48 rounded-md"
-                maxLength={300}
+                maxLength={PRODUCT_LIMITS.descriptionMax}
                 value={description}
                 onChange={(event) =>
                   setDescription(event.target.value.slice(0, 300))
                 }
               />
               <div className="mt-1 text-sm text-gray-500">
-                {description.length} / 300
+                {description.length} / {PRODUCT_LIMITS.descriptionMax}
               </div>
             </div>
           </StepShell>
@@ -442,7 +524,7 @@ export default function NewProductForm() {
 
             <div className="mt-4">
               <div className="font-medium">
-                Product Images (upload at least 1 image)
+                Product Images (upload 1 to {PRODUCT_LIMITS.imageMax} images)
               </div>
               {uploadedProductImages.length > 0 ? (
                 <div className="mt-2 space-y-4">
@@ -608,9 +690,7 @@ export default function NewProductForm() {
 
             <div className="flex flex-wrap items-center gap-5">
               <button
-                onClick={() => {
-                  window.location.href = "/my-products";
-                }}
+                onClick={() => router.push("/my-products")}
                 className="mt-4 flex w-60 cursor-pointer items-center justify-center rounded bg-[#ff6154] px-4 py-2 text-white transition-all duration-300 hover:bg-orange-600"
               >
                 Go to your products
@@ -642,13 +722,21 @@ export default function NewProductForm() {
             )}
 
             {step === 7 ? (
-              <button
+              <div className="flex flex-col items-end gap-3">
+                {submissionError && (
+                  <p className="max-w-sm text-right text-sm text-red-600">
+                    {submissionError}
+                  </p>
+                )}
+                <button
                 onClick={submitProduct}
+                disabled={loading}
                 className="mt-4 flex items-center gap-2 rounded-md bg-[#ff6154] px-4 py-2 text-white transition-all duration-300 hover:bg-orange-600"
               >
-                Submit
+                {loading ? "Submitting..." : "Submit"}
                 {loading && <LuLoader className="h-5 w-5 animate-spin" />}
               </button>
+              </div>
             ) : (
               <button
                 onClick={nextStep}
