@@ -5,6 +5,7 @@ import { PiCrown, PiPlus } from "react-icons/pi";
 
 import { AnimateContainer } from "@/components/landing-page/AnimatePageContainer";
 import { Badge } from "@/components/ui/badge";
+import UserDashboardNav from "@/components/UserDashboardNav";
 import { auth } from "@/lib/auth/auth";
 import { getOwnerProducts, isUserPremium } from "@/lib/actions";
 
@@ -21,6 +22,8 @@ export default async function MyProductsPage() {
   return (
     <AnimateContainer>
       <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all lg:w-3/5">
+        <UserDashboardNav />
+
         {products.length === 0 ? (
           <section>
             <h1 className="text-3xl font-bold">No products found</h1>

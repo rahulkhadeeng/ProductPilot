@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AnimateContainer } from "@/components/landing-page/AnimatePageContainer";
+import UserDashboardNav from "@/components/UserDashboardNav";
 import { auth } from "@/lib/auth/auth";
 import { getUpvotedProducts } from "@/lib/actions";
 
@@ -18,6 +19,8 @@ export default async function MyUpvotedProductsPage() {
   return (
     <AnimateContainer>
       <main className="mx-auto max-w-screen-xl px-6 pt-10 transition-all lg:w-4/5 xl:w-3/5">
+        <UserDashboardNav />
+
         {products.length === 0 ? (
           <section>
             <h1 className="text-3xl font-bold">
