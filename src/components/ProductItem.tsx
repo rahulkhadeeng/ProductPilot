@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CiGlobe } from "react-icons/ci";
-import { PiCaretUpFill, PiChatCircle, PiXCircleFill } from "react-icons/pi";
+import { PiCaretUpFill, PiChatCircle } from "react-icons/pi";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import ProductModal from "./ui/modal/ProductModal";
@@ -13,11 +13,12 @@ import AuthContent from "./navbar/AuthContent";
 import { upvoteProduct } from "@/lib/actions";
 import { toast } from "sonner";
 import { FaExclamation } from "react-icons/fa";
+import type { AuthSession, ProductCardView } from "@/lib/product-types";
 
-interface ProductItemProps {
-  product: any;
-  authenticatedUser: any;
-}
+type ProductItemProps = {
+  product: ProductCardView;
+  authenticatedUser: AuthSession;
+};
 
 const ProductItem: React.FC<ProductItemProps> = ({
   product,
@@ -25,10 +26,12 @@ const ProductItem: React.FC<ProductItemProps> = ({
 }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<any>(null);
+  const [currentProduct, setCurrentProduct] = useState<ProductCardView | null>(
+    null
+  );
 
   const [hasUpvoted, setHasUpvoted] = useState(
-    product.upvoters?.includes(authenticatedUser?.user.id)
+    product.upvoters.includes(authenticatedUser?.user?.id ?? "")
   );
 
   const [totalUpvotes, setTotalUpvotes] = useState(product.upvotes || 0);
@@ -71,16 +74,6 @@ const ProductItem: React.FC<ProductItemProps> = ({
         console.error(error);
       }
     }
-  };
-
-  const handleArrowClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    // Prevent the click event from propagating to the product item container
-    e.stopPropagation();
-
-    // Open the link in a new tab
-    window.open(`${product.website}`, "_blank");
   };
 
   const handleCategoryClick = (
@@ -149,7 +142,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
                     className="text-xs md:text-sm text-gray-500 tracking-tight"
                   >
                     <div className="flex gap-x-1 items-center">
-                      <div className="mr-1">•</div>
+                      <div className="mr-1">-</div>
                       <Link
                         // href={`/category/${category}.toLowerCase()}`}
                         href={`/category/${category}`}

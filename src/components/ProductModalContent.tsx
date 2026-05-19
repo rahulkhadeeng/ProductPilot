@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   PiCaretUpFill,
-  PiChatCircle,
   PiTrash,
   PiUploadSimple,
 } from "react-icons/pi";
@@ -20,15 +19,20 @@ import { toast } from "sonner";
 import { FaCheck, FaExclamation } from "react-icons/fa";
 import Modal from "./ui/modal/modal";
 import AuthContent from "./navbar/AuthContent";
+import type {
+  AuthSession,
+  ProductCardView,
+  ProductCommentView,
+} from "@/lib/product-types";
 
-interface ProductModalContentProps {
-  currentProduct: any;
-  authenticatedUser: any;
+type ProductModalContentProps = {
+  currentProduct: ProductCardView | null;
+  authenticatedUser: AuthSession;
   totalUpvotes: number;
   hasUpvoted: boolean;
-  setTotalUpvotes: any;
-  setHasUpvoted: any;
-}
+  setTotalUpvotes: React.Dispatch<React.SetStateAction<number>>;
+  setHasUpvoted: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const ProductModalContent = ({
   currentProduct,
@@ -42,7 +46,13 @@ const ProductModalContent = ({
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState(currentProduct.commentData || []);
+  const [comments, setComments] = useState<ProductCommentView[]>(
+    currentProduct?.commentData ?? []
+  );
+
+  if (!currentProduct) {
+    return null;
+  }
 
   const handleUpvoteClick = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -66,8 +76,6 @@ const ProductModalContent = ({
       );
 
       setShowLoginModal(true);
-
-      console.log("hola");
     } else {
       try {
         await upvoteProduct(currentProduct.id);
@@ -98,26 +106,40 @@ const ProductModalContent = ({
     setShareModalVisible(true);
   };
 
-  const handleCommentChange = (event: any) => {
+  const handleCommentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setCommentText(event.target.value);
   };
 
   const handleCommentSubmit = async () => {
-    try {
-      // call comment server action
-      await commentOnProduct(currentProduct.id, commentText);
+    const trimmedComment = commentText.trim();
 
-      // reset the comment textarea
+    if (!authenticatedUser?.user?.id || !trimmedComment) {
+      return;
+    }
+
+    try {
+      await commentOnProduct(currentProduct.id, trimmedComment);
+
       setCommentText("");
 
       setComments([
         ...comments,
         {
-          user: authenticatedUser.user.name,
-          body: commentText,
-          profile: authenticatedUser.user.image,
+          id: `optimistic-${Date.now()}`,
+          user:
+            authenticatedUser.user.name ??
+            authenticatedUser.user.email ??
+            "Community member",
+          body: trimmedComment,
+          profile: authenticatedUser.user.image ?? "",
           userId: authenticatedUser.user.id,
           timestamp: new Date().toISOString(),
+          name:
+            authenticatedUser.user.name ??
+            authenticatedUser.user.email ??
+            "Community member",
         },
       ]);
     } catch (error) {
@@ -127,11 +149,9 @@ const ProductModalContent = ({
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      // call delete comment server action
       await deleteComment(commentId);
 
-      // remove the comment from the section
-      setComments(comments.filter((comment: any) => comment.id !== commentId));
+      setComments(comments.filter((comment) => comment.id !== commentId));
     } catch (error) {
       console.log(error);
     }
@@ -191,7 +211,7 @@ const ProductModalContent = ({
 
           <div className="md:flex justify-between items-center pb-10">
             <div className="flex gap-x-2">
-              {currentProduct.categories.map((category: any) => (
+              {currentProduct.categories.map((category) => (
                 <Link
                   key={category}
                   href={`/category/${category.toLowerCase()}`}
@@ -221,12 +241,20 @@ const ProductModalContent = ({
             <div className="border-t border-b py-2">
               <div className="w-full flex items-center gap-4">
                 <Avatar>
-                  {authenticatedUser ? (
+                  {authenticatedUser?.user ? (
                     <>
-                      <AvatarImage src={authenticatedUser.user.image} />
+                      <AvatarImage
+                        src={authenticatedUser.user.image ?? undefined}
+                      />
 
                       <AvatarFallback>
-                        <Avvvatars value={authenticatedUser.user.email} />
+                        <Avvvatars
+                          value={
+                            authenticatedUser.user.email ??
+                            authenticatedUser.user.name ??
+                            "Community member"
+                          }
+                        />
                       </AvatarFallback>
                     </>
                   ) : (
@@ -271,8 +299,8 @@ const ProductModalContent = ({
             </div>
 
             <div className="py-10 space-y-8">
-              {comments.map((comment: any, idx: string) => (
-                <div key={idx} className="flex gap-4">
+              {comments.map((comment) => (
+                <div key={comment.id} className="flex gap-4">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={comment.profile} />
 

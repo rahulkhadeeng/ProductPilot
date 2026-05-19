@@ -30,7 +30,7 @@ export const createProduct = async ({
   instagram,
   images,
   category,
-}: ProductData): Promise<any> => {
+}: ProductData) => {
   try {
     const authenticatedUser = await auth();
 
@@ -154,10 +154,14 @@ export const updateProduct = async (
     });
 
     return updatedProduct;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating product:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while updating the product";
     throw new Error(
-      error.message || "Something went wrong while updating the product"
+      message
     );
   }
 };
@@ -200,10 +204,14 @@ export const deleteProduct = async (productId: string) => {
     });
 
     return true;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating product:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while updating the product";
     throw new Error(
-      error.message || "Something went wrong while updating the product"
+      message
     );
   }
 };
@@ -464,7 +472,7 @@ export const activateProduct = async (productId: string) => {
     });
 
     return product;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error activating product:", error);
     return null;
   }
@@ -507,7 +515,7 @@ export const rejectProduct = async (productId: string, reason: string) => {
     });
 
     return product;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error rejecting product:", error);
     return null;
   }
@@ -624,7 +632,7 @@ export const commentOnProduct = async (
       },
     });
 
-    if (productDetails && productDetails?.userId !== productId) {
+    if (productDetails && productDetails.userId !== userId) {
       await db.notification.create({
         data: {
           userId: productDetails.userId,

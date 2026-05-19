@@ -1,30 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { PiCheck, PiCopy } from "react-icons/pi";
 import CopyToClipboard from "react-copy-to-clipboard";
-import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram, FaTwitter } from "react-icons/fa";
-import Link from "next/link";
+import type { ProductCardView } from "@/lib/product-types";
 
-interface ShareModalContentProps {
-  currentProduct: any;
-}
+type ShareModalContentProps = {
+  currentProduct: ProductCardView;
+};
 
 const ShareModalContent: React.FC<ShareModalContentProps> = ({
   currentProduct,
 }) => {
-  const [copiedText, setCopiedText] = useState("");
   const [isCopied, setIsCopied] = useState(false);
 
-  const urlPrefix = "https://product-sphere.vercel.app/products/";
-
-  useEffect(() => {
-    if (currentProduct && currentProduct.slug) {
-      setCopiedText(urlPrefix + currentProduct.slug);
-    }
-  }, [currentProduct, urlPrefix]);
+  const copiedText = useMemo(
+    () => {
+      const path = `/product/${currentProduct.slug}`;
+      return typeof window === "undefined" ? path : `${window.location.origin}${path}`;
+    },
+    [currentProduct.slug]
+  );
 
   const handleCopy = () => {
     setIsCopied(true);

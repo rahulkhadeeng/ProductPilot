@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Status } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -44,7 +44,7 @@ async function main() {
       website: "https://superapp.com",
       twitter: "https://twitter.com/superapp",
       instagram: "https://instagram.com/superapp",
-      status: "ACTIVE" as any,
+      status: Status.ACTIVE,
       rank: 10,
     },
     {
@@ -57,7 +57,7 @@ async function main() {
       website: "https://designpro.com",
       twitter: "https://twitter.com/designpro",
       instagram: "https://instagram.com/designpro",
-      status: "ACTIVE" as any,
+      status: Status.ACTIVE,
       rank: 25,
     },
   ];

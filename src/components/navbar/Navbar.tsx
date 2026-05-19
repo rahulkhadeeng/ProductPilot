@@ -17,6 +17,7 @@ import AuthContent from "./AuthContent";
 import AvatarMenu from "./AvatarMenu";
 import Menu from "./Menu";
 import MobileNav from "./MobileNav";
+import Search from "./Search";
 import SubmitButton from "./SubmitButton";
 
 type NavbarProps = {
@@ -43,6 +44,8 @@ export default function Navbar({ session }: NavbarProps) {
         </div>
 
         <div className="flex items-center gap-2 md:gap-5">
+          <Search />
+
           {session ? (
             <div className="flex items-center gap-5">
               <SubmitButton />
