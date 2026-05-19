@@ -1,25 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 
-"use client";
-import { motion } from "framer-motion";
-
 import React from "react";
 
 const TestimonialSection = () => {
   return (
-    <motion.div
+    <div
       className="flex flex-col items-center justify-center my-52 px-10 max-w-6xl mx-auto"
-      viewport={{ once: true, amount: 0.2 }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        ease: "easeInOut",
-        duration: 0.4,
-        delay: 0.6,
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-      }}
     >
       <div className="mx-auto text-center">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium mt-6 transition-all">
@@ -33,7 +19,7 @@ const TestimonialSection = () => {
       </div>
 
       <MarqueeComp />
-    </motion.div>
+    </div>
   );
 };
 

@@ -1,24 +1,14 @@
-"use client";
-
-import { ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { GoArrowRight } from "react-icons/go";
 import AnimatedGradientText from "../ui/animated-gradient-text";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 const HeroSection = () => {
   return (
-    <motion.div className="px-6 xl:px-[15%] flex flex-col items-center justify-start transition-all">
-      <motion.div
+    <div className="px-6 xl:px-[15%] flex flex-col items-center justify-start transition-all">
+      <div
         className="pt-24  flex flex-col items-center w-full text-center"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 0.5,
-          delay: 0.1,
-        }}
       >
         {/* badge */}
         <div className="z-10 mb-5 md:mb-10 flex items-center justify-center">
@@ -51,7 +41,7 @@ const HeroSection = () => {
         >
           <span className="group relative z-10 flex items-center gap-2 md:text-lg transition-all">
             Discover
-            <GoArrowRight
+            <ArrowRight
               className="size-4 group-hover:translate-x-1 transition-all duration-500"
               strokeWidth={1}
             />
@@ -59,7 +49,7 @@ const HeroSection = () => {
 
           <div className="ease-&lsqb;cubic-bezier(0.19,1,0.22,1)&rsqb; absolute -left-[75px] -top-[50px] -z-10 h-[155px] w-8 rotate-[35deg] bg-white opacity-20 transition-all duration-500 group-hover:left-[120%]" />
         </Link>
-      </motion.div>
+      </div>
 
       <div className="relative mt-5">
         <div className="absolute top-1/2 left-1/2 -z-10 gradient w-full -translate-x-1/2 h-3/4 -translate-y-1/2 inset-0 blur-[10rem]"></div>
@@ -73,13 +63,15 @@ const HeroSection = () => {
               alt=""
               width={1920}
               height={1080}
+              loading="eager"
+              fetchPriority="high"
               className="rounded-lg lg:rounded-[20px]"
               draggable={false}
             />
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

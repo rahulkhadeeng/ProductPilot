@@ -1,24 +1,9 @@
-"use client";
-
-import React from "react";
-import { motion } from "framer-motion";
-import { GoArrowRight } from "react-icons/go";
+import { ArrowRight } from "lucide-react";
 
 const CtaSection = () => {
   return (
-    <motion.div
+    <div
       className="flex flex-col items-center justify-center mb-40 max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto"
-      viewport={{ once: true, amount: 0.2 }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        ease: "easeInOut",
-        duration: 0.4,
-        delay: 0.6,
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-      }}
     >
       <div
         className="relative flex w-full flex-col items-center justify-center rounded-2xl border bg-blue-900 py-20 text-center shadow [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))]"
@@ -37,7 +22,7 @@ const CtaSection = () => {
         >
           <span className="group relative z-10 flex items-center gap-2 md:text-lg transition-all">
             Get Started
-            <GoArrowRight
+            <ArrowRight
               className="size-4 group-hover:translate-x-1 transition-all duration-500"
               strokeWidth={1}
             />
@@ -48,7 +33,7 @@ const CtaSection = () => {
 
         <Noise />
       </div>
-    </motion.div>
+    </div>
   );
 };
 

@@ -4,16 +4,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { motion } from "framer-motion";
 
 export function FaqSection() {
   return (
-    <motion.div
+    <div
       className="mt-24 mb-20"
-      viewport={{ once: true }}
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.6 }}
     >
       <div className="flex flex-col items-center justify-center w-full pt-12">
         <h2 className="mt-6 font-semibold text-center text-3xl xl:text-5xl">
@@ -35,7 +30,7 @@ export function FaqSection() {
           ))}
         </Accordion>
       </div>
-    </motion.div>
+    </div>
   );
 }
 export const Faq = [

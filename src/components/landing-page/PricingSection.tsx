@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -10,23 +8,11 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CheckCircleIcon } from "lucide-react";
-import { motion } from "framer-motion";
 
 const PricingSection = () => {
   return (
-    <motion.div
+    <div
       className="flex flex-col items-center my-40"
-      viewport={{ once: true, amount: 0.2 }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        ease: "easeInOut",
-        duration: 0.4,
-        delay: 0.6,
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-      }}
     >
       <div className="flex flex-col items-center justify-center mb-12 mx-10">
         <h1 className="text-4xl md:text-5xl font-medium text-center !leading-tight md:tracking-tight transition-all">
@@ -97,7 +83,7 @@ const PricingSection = () => {
           </Card>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

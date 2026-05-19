@@ -1,24 +1,10 @@
-"use client";
-
 import { RocketIcon, EditIcon, PlusIcon, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 const HowItWorksSection = () => {
   return (
-    <motion.div
+    <div
       className="flex flex-col items-center justify-center px-10 xl:px-[15%] mt-60 mb-40"
-      viewport={{ once: true }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        ease: "easeInOut",
-        duration: 0.4,
-        delay: 0.6,
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-      }}
     >
       <div className="text-center">
         <h2 className="text-3xl min-[470px]:text-4xl sm:text-4xl md:text-5xl font-medium transition-all">
@@ -31,7 +17,7 @@ const HowItWorksSection = () => {
       </div>
 
       <MainSection />
-    </motion.div>
+    </div>
   );
 };
 

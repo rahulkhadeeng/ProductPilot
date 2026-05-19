@@ -1,7 +1,4 @@
-"use client";
-
 import React, { useId } from "react";
-import { motion } from "framer-motion";
 import {
   Rocket,
   Users,
@@ -14,19 +11,8 @@ import {
 
 const FeaturesSection = () => {
   return (
-    <motion.div
+    <div
       className="relative mx-auto my-40 flex w-full max-w-screen-xl flex-col items-center justify-center"
-      viewport={{ once: true, amount: 0.2 }}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        ease: "easeInOut",
-        duration: 0.4,
-        delay: 0.6,
-        type: "spring",
-        stiffness: 260,
-        damping: 20,
-      }}
     >
       {/* gradients */}
       {/* <div className="hidden md:block absolute top-0 -right-[30%] 2xl:-right-[40%] w-72 h-72 gradient rounded-full blur-[10rem] -z-10"></div> */}
@@ -51,7 +37,7 @@ const FeaturesSection = () => {
           <FeaturesGrid />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
