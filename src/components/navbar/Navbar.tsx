@@ -17,16 +17,17 @@ import AuthContent from "./AuthContent";
 import AvatarMenu from "./AvatarMenu";
 import Menu from "./Menu";
 import MobileNav from "./MobileNav";
+import NotificationIcon, { type NavbarNotification } from "./NotificationIcon";
 import Search from "./Search";
 import SubmitButton from "./SubmitButton";
 
 type NavbarProps = {
   session: Session | null;
-  notifications?: unknown;
+  notifications?: NavbarNotification[];
   products?: unknown;
 };
 
-export default function Navbar({ session }: NavbarProps) {
+export default function Navbar({ session, notifications = [] }: NavbarProps) {
   const [authModalVisible, setAuthModalVisible] = useState(false);
 
   return (
@@ -49,6 +50,7 @@ export default function Navbar({ session }: NavbarProps) {
           {session ? (
             <div className="flex items-center gap-5">
               <SubmitButton />
+              <NotificationIcon notifications={notifications} />
               <AvatarMenu session={session} />
             </div>
           ) : (

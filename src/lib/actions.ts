@@ -881,6 +881,14 @@ export const getNotifications = async () => {
       where: {
         userId: userId,
       },
+      include: {
+        product: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: "desc",
       },
