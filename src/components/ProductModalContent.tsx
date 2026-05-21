@@ -98,6 +98,12 @@ const ProductModalContent = ({
         );
       } catch (error) {
         console.log("Error while upvoting product:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Could not update your upvote.",
+          { position: "top-right" }
+        );
       }
     }
   };
@@ -120,23 +126,30 @@ const ProductModalContent = ({
     }
 
     try {
-      await commentOnProduct(currentProduct.id, trimmedComment);
+      const savedComment = await commentOnProduct(
+        currentProduct.id,
+        trimmedComment
+      );
 
       setCommentText("");
 
       setComments([
         ...comments,
         {
-          id: `optimistic-${Date.now()}`,
+          id: savedComment?.id ?? `optimistic-${Date.now()}`,
           user:
+            savedComment?.user.name ??
             authenticatedUser.user.name ??
             authenticatedUser.user.email ??
             "Community member",
-          body: trimmedComment,
-          profile: authenticatedUser.user.image ?? "",
-          userId: authenticatedUser.user.id,
-          timestamp: new Date().toISOString(),
+          body: savedComment?.body ?? trimmedComment,
+          profile:
+            savedComment?.profilePicture ?? authenticatedUser.user.image ?? "",
+          userId: savedComment?.userId ?? authenticatedUser.user.id,
+          timestamp: savedComment?.createdAt ?? new Date().toISOString(),
           name:
+            savedComment?.user.name ??
+            savedComment?.user.email ??
             authenticatedUser.user.name ??
             authenticatedUser.user.email ??
             "Community member",
@@ -144,6 +157,10 @@ const ProductModalContent = ({
       ]);
     } catch (error) {
       console.log(error);
+      toast.error(
+        error instanceof Error ? error.message : "Could not post comment.",
+        { position: "top-right" }
+      );
     }
   };
 
@@ -154,6 +171,10 @@ const ProductModalContent = ({
       setComments(comments.filter((comment) => comment.id !== commentId));
     } catch (error) {
       console.log(error);
+      toast.error(
+        error instanceof Error ? error.message : "Could not delete comment.",
+        { position: "top-right" }
+      );
     }
   };
 

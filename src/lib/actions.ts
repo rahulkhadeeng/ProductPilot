@@ -621,6 +621,27 @@ export const upvoteProduct = async (productId: string) => {
 
     const userId = authenticatedUser.user.id;
 
+    const product = await db.product.findUnique({
+      where: {
+        id: productId,
+      },
+      select: {
+        id: true,
+        name: true,
+        logo: true,
+        status: true,
+        userId: true,
+      },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    if (product.status !== "ACTIVE") {
+      throw new Error("Only active products can be upvoted");
+    }
+
     const upvote = await db.upvote.findFirst({
       where: {
         productId,
@@ -645,23 +666,14 @@ export const upvoteProduct = async (productId: string) => {
         },
       });
 
-      const productOwner = await db.product.findUnique({
-        where: {
-          id: productId,
-        },
-        select: {
-          userId: true,
-        },
-      });
-
       // notify the product owner about the upvote
-      if (productOwner && productOwner.userId !== userId) {
+      if (product.userId !== userId) {
         await db.notification.create({
           data: {
-            userId: productOwner.userId,
-            body: `Upvoted your product`,
+            userId: product.userId,
+            body: `Upvoted your product "${product.name}"`,
             profilePicture: profilePicture,
-            productId: productId,
+            productId: product.id,
             type: "UPVOTE",
             status: "UNREAD",
           },
@@ -691,30 +703,49 @@ export const commentOnProduct = async (
     }
 
     const userId = authenticatedUser.user.id;
+    const trimmedComment = commentText.trim();
 
-    //
-    const profilePicture = authenticatedUser.user.image || "";
+    if (!trimmedComment) {
+      throw new Error("Comment cannot be empty");
+    }
 
-    await db.comment.create({
-      data: {
-        createdAt: new Date(),
-        productId,
-        userId,
-        body: commentText,
-        profilePicture: profilePicture,
-      },
-      include: {
-        user: true,
-      },
-    });
+    if (trimmedComment.length > 1000) {
+      throw new Error("Comment must be 1000 characters or fewer");
+    }
 
     const productDetails = await db.product.findUnique({
       where: {
         id: productId,
       },
       select: {
+        id: true,
         userId: true,
         name: true,
+        status: true,
+      },
+    });
+
+    if (!productDetails) {
+      throw new Error("Product not found");
+    }
+
+    if (productDetails.status !== "ACTIVE") {
+      throw new Error("Only active products can receive comments");
+    }
+
+    //
+    const profilePicture = authenticatedUser.user.image || "";
+
+    const comment = await db.comment.create({
+      data: {
+        createdAt: new Date(),
+        productId,
+        userId,
+        body: trimmedComment,
+        profilePicture: profilePicture,
+      },
+      include: {
+        user: true,
       },
     });
 
@@ -730,6 +761,8 @@ export const commentOnProduct = async (
         },
       });
     }
+
+    return comment;
   } catch (error) {
     console.log("Error commenting on product", error);
     throw error;
@@ -738,16 +771,62 @@ export const commentOnProduct = async (
 
 export const deleteComment = async (commentId: string) => {
   try {
+    const authenticatedUser = await auth();
+
+    if (!authenticatedUser?.user?.id) {
+      throw new Error("You must be signed in to delete a comment");
+    }
+
+    const userId = authenticatedUser.user.id;
+
+    const comment = await db.comment.findUnique({
+      where: {
+        id: commentId,
+      },
+      include: {
+        product: {
+          select: {
+            userId: true,
+            slug: true,
+          },
+        },
+      },
+    });
+
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    const user = await db.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        isAdmin: true,
+      },
+    });
+
+    const canDelete =
+      comment.userId === userId ||
+      comment.product.userId === userId ||
+      user?.isAdmin === true;
+
+    if (!canDelete) {
+      throw new Error("You don't have permission to delete this comment");
+    }
+
     await db.comment.delete({
       where: {
         id: commentId,
       },
     });
 
+    revalidatePath(`/product/${comment.product.slug}`);
+
     return true;
   } catch (error) {
     console.log("Error while deleting a comment", error);
-    throw Error;
+    throw error;
   }
 };
 
@@ -783,9 +862,10 @@ export const getUpvotedProducts = async () => {
 
 export const getProductBySlug = async (slug: string) => {
   try {
-    const product = await db.product.findUnique({
+    const product = await db.product.findFirst({
       where: {
         slug,
+        status: "ACTIVE",
       },
       include: {
         user: true,
