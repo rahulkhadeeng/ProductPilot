@@ -29,6 +29,9 @@ type NavbarProps = {
 
 export default function Navbar({ session, notifications = [] }: NavbarProps) {
   const [authModalVisible, setAuthModalVisible] = useState(false);
+  const unreadNotifications = notifications.filter(
+    (notification) => notification.status === "UNREAD"
+  ).length;
 
   return (
     <div className="sticky top-0 z-50 h-16 border-b bg-white px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -70,7 +73,10 @@ export default function Navbar({ session, notifications = [] }: NavbarProps) {
             </Dialog>
           )}
 
-          <MobileNav />
+          <MobileNav
+            isAuthenticated={Boolean(session)}
+            unreadNotifications={unreadNotifications}
+          />
         </div>
       </div>
     </div>

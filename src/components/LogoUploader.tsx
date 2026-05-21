@@ -19,6 +19,10 @@ export function LogoUploader({ endpoint, onChange }: LogoUploaderProps) {
   return (
     <UploadDropzone
       endpoint={endpoint}
+      config={{ mode: "auto" }}
+      onUploadBegin={() => {
+        toast.info("Uploading logo...", { position: "top-center" });
+      }}
       onClientUploadComplete={(res) => {
         const file = res?.[0] as UploadedFile | undefined;
         const url = file?.url ?? file?.ufsUrl;

@@ -4,7 +4,14 @@ import NextAuth from "next-auth";
 
 const { auth } = NextAuth(authConfig);
 
-const protectedRoutes = ["/admin", "/new-product", "/settings", "/my-products", "/my-upvoted"];
+const protectedRoutes = [
+  "/admin",
+  "/new-product",
+  "/settings",
+  "/my-products",
+  "/my-upvoted",
+  "/notifications",
+];
 
 export default auth(async function middleware(req) {
   const { nextUrl } = req;
@@ -26,5 +33,6 @@ export const config = {
     "/settings/:path*",
     "/my-products/:path*",
     "/my-upvoted/:path*",
+    "/notifications/:path*",
   ],
 };

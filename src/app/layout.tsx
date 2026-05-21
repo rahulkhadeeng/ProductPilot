@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
 
 import { Toaster } from "@/components/ui/sonner";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 import "./globals.css";
 
@@ -17,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         {children}
         <Toaster />
       </body>

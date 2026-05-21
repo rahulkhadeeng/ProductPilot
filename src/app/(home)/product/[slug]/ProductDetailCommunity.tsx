@@ -38,8 +38,15 @@ export default function ProductDetailCommunity({
     product.commentData
   );
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isUpvotePending, setIsUpvotePending] = useState(false);
+  const [isCommentPending, setIsCommentPending] = useState(false);
+  const [deletingCommentIds, setDeletingCommentIds] = useState<string[]>([]);
 
   const handleUpvoteClick = async () => {
+    if (isUpvotePending) {
+      return;
+    }
+
     if (!authenticatedUser?.user?.id) {
       toast(
         <div className="mx-auto flex w-full items-center gap-4">
@@ -54,6 +61,8 @@ export default function ProductDetailCommunity({
       return;
     }
 
+    setIsUpvotePending(true);
+
     try {
       await upvoteProduct(product.id);
       setTotalUpvotes((current) => (hasUpvoted ? current - 1 : current + 1));
@@ -63,6 +72,8 @@ export default function ProductDetailCommunity({
         error instanceof Error ? error.message : "Could not update your upvote.",
         { position: "top-right" }
       );
+    } finally {
+      setIsUpvotePending(false);
     }
   };
 
@@ -75,10 +86,23 @@ export default function ProductDetailCommunity({
     }
 
     if (!trimmedComment) {
+      toast.error("Comment cannot be empty.", { position: "top-right" });
+      return;
+    }
+
+    if (trimmedComment.length > 1000) {
+      toast.error("Comment must be 1000 characters or fewer.", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (isCommentPending) {
       return;
     }
 
     const user = authenticatedUser.user;
+    setIsCommentPending(true);
 
     try {
       const savedComment = await commentOnProduct(product.id, trimmedComment);
@@ -106,15 +130,24 @@ export default function ProductDetailCommunity({
             "Community member",
         },
       ]);
+      toast.success("Comment posted.", { position: "top-right" });
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not post comment.",
         { position: "top-right" }
       );
+    } finally {
+      setIsCommentPending(false);
     }
   };
 
   const handleDeleteComment = async (commentId: string) => {
+    if (deletingCommentIds.includes(commentId)) {
+      return;
+    }
+
+    setDeletingCommentIds((current) => [...current, commentId]);
+
     try {
       await deleteComment(commentId);
       setComments((current) =>
@@ -124,6 +157,10 @@ export default function ProductDetailCommunity({
       toast.error(
         error instanceof Error ? error.message : "Could not delete comment.",
         { position: "top-right" }
+      );
+    } finally {
+      setDeletingCommentIds((current) =>
+        current.filter((id) => id !== commentId)
       );
     }
   };
@@ -155,11 +192,12 @@ export default function ProductDetailCommunity({
           <button
             type="button"
             onClick={handleUpvoteClick}
+            disabled={isUpvotePending}
             className={`flex items-center justify-center gap-2 rounded border px-3 py-1 font-medium transition-all duration-300 active:scale-90 sm:px-4 sm:py-2 ${
               hasUpvoted
                 ? "border-indigo-500 bg-indigo-50 text-indigo-600"
                 : "bg-white hover:border-indigo-500"
-            }`}
+            } disabled:pointer-events-none disabled:opacity-60`}
           >
             <PiCaretUpFill />
             {totalUpvotes}
@@ -227,6 +265,7 @@ export default function ProductDetailCommunity({
             value={commentText}
             onChange={(event) => setCommentText(event.target.value)}
             placeholder="What do you think about this product?"
+            maxLength={1000}
             className="hidden w-full rounded-md p-4 text-gray-600 placeholder:text-sm focus:outline-none md:block"
             rows={1}
           />
@@ -235,6 +274,7 @@ export default function ProductDetailCommunity({
             value={commentText}
             onChange={(event) => setCommentText(event.target.value)}
             placeholder="What do you think about this product?"
+            maxLength={1000}
             className="block w-full rounded-md p-4 text-gray-600 placeholder:text-sm focus:outline-none md:hidden"
             rows={2}
           />
@@ -244,9 +284,14 @@ export default function ProductDetailCommunity({
           <button
             type="button"
             onClick={authenticatedUser ? handleCommentSubmit : () => setShowLoginModal(true)}
-            className="rounded-md border px-3 py-2 text-sm text-foreground/80 transition-all duration-300 hover:border-[#ff6154] active:scale-90"
+            disabled={isCommentPending}
+            className="rounded-md border px-3 py-2 text-sm text-foreground/80 transition-all duration-300 hover:border-[#ff6154] active:scale-90 disabled:pointer-events-none disabled:opacity-60"
           >
-            {authenticatedUser ? "Comment" : "Sign in to comment"}
+            {authenticatedUser
+              ? isCommentPending
+                ? "Posting..."
+                : "Comment"
+              : "Sign in to comment"}
           </button>
         </div>
       </div>
@@ -283,10 +328,15 @@ export default function ProductDetailCommunity({
 
                   {(comment.userId === authenticatedUser?.user?.id ||
                     product.userId === authenticatedUser?.user?.id) && (
-                    <PiTrash
+                    <button
+                      type="button"
+                      disabled={deletingCommentIds.includes(comment.id)}
                       onClick={() => handleDeleteComment(comment.id)}
-                      className="text-red-500 hover:cursor-pointer"
-                    />
+                      aria-label="Delete comment"
+                      className="text-red-500 transition-all hover:cursor-pointer disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      <PiTrash />
+                    </button>
                   )}
                 </div>
 

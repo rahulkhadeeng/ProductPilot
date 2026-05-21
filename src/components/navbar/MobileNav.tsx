@@ -11,7 +11,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function MobileNav() {
+type MobileNavProps = {
+  isAuthenticated?: boolean;
+  unreadNotifications?: number;
+};
+
+export default function MobileNav({
+  isAuthenticated = false,
+  unreadNotifications = 0,
+}: MobileNavProps) {
   return (
     <div className="mt-2 transition-all lg:hidden">
       <Dialog>
@@ -49,6 +57,19 @@ export default function MobileNav() {
             >
               About
             </Link>
+            {isAuthenticated && (
+              <Link
+                href="/notifications"
+                className="flex items-center justify-between text-xl font-medium text-foreground/80 transition-all hover:text-indigo-500"
+              >
+                <span>Notifications</span>
+                {unreadNotifications > 0 && (
+                  <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-500 px-2 text-xs font-semibold text-white">
+                    {unreadNotifications > 9 ? "9+" : unreadNotifications}
+                  </span>
+                )}
+              </Link>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -49,6 +49,9 @@ const ProductModalContent = ({
   const [comments, setComments] = useState<ProductCommentView[]>(
     currentProduct?.commentData ?? []
   );
+  const [isUpvotePending, setIsUpvotePending] = useState(false);
+  const [isCommentPending, setIsCommentPending] = useState(false);
+  const [deletingCommentIds, setDeletingCommentIds] = useState<string[]>([]);
 
   if (!currentProduct) {
     return null;
@@ -58,6 +61,10 @@ const ProductModalContent = ({
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
+
+    if (isUpvotePending) {
+      return;
+    }
 
     if (!authenticatedUser) {
       toast(
@@ -77,12 +84,14 @@ const ProductModalContent = ({
 
       setShowLoginModal(true);
     } else {
+      setIsUpvotePending(true);
+
       try {
         await upvoteProduct(currentProduct.id);
 
-        setTotalUpvotes(hasUpvoted ? totalUpvotes - 1 : totalUpvotes + 1);
+        setTotalUpvotes((current) => (hasUpvoted ? current - 1 : current + 1));
 
-        setHasUpvoted(!hasUpvoted);
+        setHasUpvoted((current) => !current);
 
         toast(
           <>
@@ -104,6 +113,8 @@ const ProductModalContent = ({
             : "Could not update your upvote.",
           { position: "top-right" }
         );
+      } finally {
+        setIsUpvotePending(false);
       }
     }
   };
@@ -122,8 +133,26 @@ const ProductModalContent = ({
     const trimmedComment = commentText.trim();
 
     if (!authenticatedUser?.user?.id || !trimmedComment) {
+      if (!authenticatedUser?.user?.id) {
+        setShowLoginModal(true);
+      } else {
+        toast.error("Comment cannot be empty.", { position: "top-right" });
+      }
       return;
     }
+
+    if (trimmedComment.length > 1000) {
+      toast.error("Comment must be 1000 characters or fewer.", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    if (isCommentPending) {
+      return;
+    }
+
+    setIsCommentPending(true);
 
     try {
       const savedComment = await commentOnProduct(
@@ -155,16 +184,25 @@ const ProductModalContent = ({
             "Community member",
         },
       ]);
+      toast.success("Comment posted.", { position: "top-right" });
     } catch (error) {
       console.log(error);
       toast.error(
         error instanceof Error ? error.message : "Could not post comment.",
         { position: "top-right" }
       );
+    } finally {
+      setIsCommentPending(false);
     }
   };
 
   const handleDeleteComment = async (commentId: string) => {
+    if (deletingCommentIds.includes(commentId)) {
+      return;
+    }
+
+    setDeletingCommentIds((current) => [...current, commentId]);
+
     try {
       await deleteComment(commentId);
 
@@ -174,6 +212,10 @@ const ProductModalContent = ({
       toast.error(
         error instanceof Error ? error.message : "Could not delete comment.",
         { position: "top-right" }
+      );
+    } finally {
+      setDeletingCommentIds((current) =>
+        current.filter((id) => id !== commentId)
       );
     }
   };
@@ -214,8 +256,9 @@ const ProductModalContent = ({
                   hasUpvoted
                     ? "border border-indigo-500 hover:bg-indigo-50 transition-all"
                     : "text-black border hover:bg-indigo-50 transition-all duration-300"
-                }`}
+                } disabled:pointer-events-none disabled:opacity-60`}
                 onClick={handleUpvoteClick}
+                disabled={isUpvotePending}
               >
                 <PiCaretUpFill
                   className={`text-xl ${
@@ -287,6 +330,7 @@ const ProductModalContent = ({
                   value={commentText}
                   onChange={handleCommentChange}
                   placeholder="What do you think about this product?"
+                  maxLength={1000}
                   className="w-full rounded-md p-4 focus:outline-none text-gray-600 placeholder:text-sm hidden md:block"
                   rows={1}
                 />
@@ -295,6 +339,7 @@ const ProductModalContent = ({
                   value={commentText}
                   onChange={handleCommentChange}
                   placeholder="What do you think about this product?"
+                  maxLength={1000}
                   className="w-full rounded-md p-4 focus:outline-none text-gray-600 placeholder:text-sm block md:hidden"
                   rows={2}
                 />
@@ -304,9 +349,10 @@ const ProductModalContent = ({
                 {authenticatedUser ? (
                   <button
                     onClick={handleCommentSubmit}
-                    className="px-3 py-2 text-sm text-foreground/80 border hover:border-[#ff6154] rounded-md transition-all duration-300 active:scale-90"
+                    disabled={isCommentPending}
+                    className="px-3 py-2 text-sm text-foreground/80 border hover:border-[#ff6154] rounded-md transition-all duration-300 active:scale-90 disabled:pointer-events-none disabled:opacity-60"
                   >
-                    Comment
+                    {isCommentPending ? "Posting..." : "Comment"}
                   </button>
                 ) : (
                   <button
@@ -352,10 +398,15 @@ const ProductModalContent = ({
                       {(comment.userId === authenticatedUser?.user?.id ||
                         currentProduct.userId ===
                           authenticatedUser?.user?.id) && (
-                        <PiTrash
+                        <button
+                          type="button"
+                          disabled={deletingCommentIds.includes(comment.id)}
                           onClick={() => handleDeleteComment(comment.id)}
-                          className="text-red-500 hover:cursor-pointer"
-                        />
+                          aria-label="Delete comment"
+                          className="text-red-500 transition-all hover:cursor-pointer disabled:pointer-events-none disabled:opacity-50"
+                        >
+                          <PiTrash />
+                        </button>
                       )}
                     </div>
 

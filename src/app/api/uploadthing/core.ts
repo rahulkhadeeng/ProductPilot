@@ -1,6 +1,9 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 import { auth } from "@/lib/auth/auth";
+import { assertUploadThingToken } from "@/lib/uploadthing-env";
+
+assertUploadThingToken();
 
 const f = createUploadthing();
 

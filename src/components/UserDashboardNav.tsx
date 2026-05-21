@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Package, Settings, ThumbsUp } from "lucide-react";
+import { Bell, Package, Settings, ThumbsUp } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,11 @@ const dashboardLinks = [
     href: "/my-upvoted",
     label: "Upvoted",
     icon: ThumbsUp,
+  },
+  {
+    href: "/notifications",
+    label: "Notifications",
+    icon: Bell,
   },
 ];
 

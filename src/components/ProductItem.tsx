@@ -35,6 +35,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
   );
 
   const [totalUpvotes, setTotalUpvotes] = useState(product.upvotes || 0);
+  const [isUpvotePending, setIsUpvotePending] = useState(false);
 
   const handleProductItemClick = () => {
     setCurrentProduct(product);
@@ -45,6 +46,10 @@ const ProductItem: React.FC<ProductItemProps> = ({
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     e.stopPropagation();
+
+    if (isUpvotePending) {
+      return;
+    }
 
     if (!authenticatedUser) {
       toast(
@@ -64,14 +69,24 @@ const ProductItem: React.FC<ProductItemProps> = ({
 
       setShowLoginModal(true);
     } else {
+      setIsUpvotePending(true);
+
       try {
         await upvoteProduct(product.id);
 
-        setHasUpvoted(!hasUpvoted);
+        setHasUpvoted((current) => !current);
 
-        setTotalUpvotes(hasUpvoted ? totalUpvotes - 1 : totalUpvotes + 1);
+        setTotalUpvotes((current) => (hasUpvoted ? current - 1 : current + 1));
       } catch (error) {
         console.error(error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Could not update your upvote.",
+          { position: "top-right" }
+        );
+      } finally {
+        setIsUpvotePending(false);
       }
     }
   };
@@ -163,7 +178,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
               onClick={handleUpvoteClick}
               variants={variants}
               animate={hasUpvoted ? "upvoted" : "initital"}
-              className=""
+              className={isUpvotePending ? "pointer-events-none opacity-60" : ""}
             >
               {hasUpvoted ? (
                 <div className="border px-3 py-1 rounded-md flex flex-col items-center font-medium border-indigo-500 bg-white hover:bg-gray-50 transition-all">

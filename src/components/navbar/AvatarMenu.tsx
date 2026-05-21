@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Bell,
   LogOut,
   Package,
   Settings,
@@ -67,6 +68,13 @@ export default function AvatarMenu({ session }: AvatarMenuProps) {
             <Link href="/my-upvoted" className="flex w-full gap-x-2">
               <ThumbsUp className="text-xl" />
               Upvoted
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link href="/notifications" className="flex w-full gap-x-2">
+              <Bell className="text-xl" />
+              Notifications
             </Link>
           </DropdownMenuItem>
 

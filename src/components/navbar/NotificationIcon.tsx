@@ -13,7 +13,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { markAllNotificationsAsRead } from "@/lib/actions";
+import {
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from "@/lib/actions";
 import { cn } from "@/lib/utils";
 
 export type NavbarNotification = {
@@ -97,6 +100,30 @@ export default function NotificationIcon({
     });
   };
 
+  const handleOpenNotification = (notificationId: string) => {
+    const notification = localNotifications.find(
+      (current) => current.id === notificationId
+    );
+
+    if (!notification || notification.status === "READ") {
+      return;
+    }
+
+    setLocalNotifications((current) =>
+      current.map((item) =>
+        item.id === notificationId ? { ...item, status: "READ" } : item
+      )
+    );
+
+    startTransition(async () => {
+      try {
+        await markNotificationAsRead(notificationId);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  };
+
   return (
     <div className="hidden md:block">
       <Sheet>
@@ -158,6 +185,7 @@ export default function NotificationIcon({
                     <Link
                       key={notification.id}
                       href={productHref}
+                      onClick={() => handleOpenNotification(notification.id)}
                       className="flex gap-3 rounded-md p-2 transition-all hover:bg-gray-50"
                     >
                       <Avatar className="h-9 w-9">
@@ -197,6 +225,13 @@ export default function NotificationIcon({
               </div>
             )}
           </div>
+
+          <Link
+            href="/notifications"
+            className="rounded-md border px-4 py-2 text-center text-sm font-medium transition-all hover:border-indigo-500"
+          >
+            View all notifications
+          </Link>
         </SheetContent>
       </Sheet>
     </div>

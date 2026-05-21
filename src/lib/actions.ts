@@ -629,6 +629,7 @@ export const upvoteProduct = async (productId: string) => {
         id: true,
         name: true,
         logo: true,
+        slug: true,
         status: true,
         userId: true,
       },
@@ -680,6 +681,12 @@ export const upvoteProduct = async (productId: string) => {
         });
       }
     }
+
+    revalidatePath("/products");
+    revalidatePath("/my-upvoted");
+    revalidatePath(`/product/${product.slug}`);
+    revalidatePath("/notifications");
+
     return true;
   } catch (error) {
     console.error("Error upvoting product:", error);
@@ -721,6 +728,7 @@ export const commentOnProduct = async (
         id: true,
         userId: true,
         name: true,
+        slug: true,
         status: true,
       },
     });
@@ -756,11 +764,15 @@ export const commentOnProduct = async (
           body: `Someone commented on your product "${productDetails.name}"`,
           profilePicture: profilePicture,
           productId: productId,
+          commentId: comment.id,
           type: "COMMENT",
           status: "UNREAD",
         },
       });
     }
+
+    revalidatePath(`/product/${productDetails.slug}`);
+    revalidatePath("/notifications");
 
     return comment;
   } catch (error) {
@@ -822,6 +834,7 @@ export const deleteComment = async (commentId: string) => {
     });
 
     revalidatePath(`/product/${comment.product.slug}`);
+    revalidatePath("/notifications");
 
     return true;
   } catch (error) {
@@ -985,6 +998,35 @@ export const getNotifications = async () => {
   }
 };
 
+export const markNotificationAsRead = async (notificationId: string) => {
+  try {
+    const authenticatedUser = await auth();
+
+    if (!authenticatedUser?.user?.id) {
+      throw new Error("User ID is missing or invalid");
+    }
+
+    const userId = authenticatedUser.user.id;
+
+    await db.notification.updateMany({
+      where: {
+        id: notificationId,
+        userId,
+      },
+      data: {
+        status: "READ",
+      },
+    });
+
+    revalidatePath("/notifications");
+
+    return true;
+  } catch (error) {
+    console.log("Error marking notification as read", error);
+    throw error;
+  }
+};
+
 export const markAllNotificationsAsRead = async () => {
   try {
     const authenticatedUser = await auth();
@@ -1002,11 +1044,14 @@ export const markAllNotificationsAsRead = async () => {
     await db.notification.updateMany({
       where: {
         userId,
+        status: "UNREAD",
       },
       data: {
         status: "READ",
       },
     });
+
+    revalidatePath("/notifications");
 
     return;
   } catch (error) {

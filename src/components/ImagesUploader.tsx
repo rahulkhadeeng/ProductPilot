@@ -19,6 +19,10 @@ export function ImagesUploader({ endpoint, onChange }: ImagesUploaderProps) {
   return (
     <UploadDropzone
       endpoint={endpoint}
+      config={{ mode: "auto" }}
+      onUploadBegin={() => {
+        toast.info("Uploading images...", { position: "top-center" });
+      }}
       onClientUploadComplete={(res) => {
         const urls = (res as UploadedFile[])
           .map((item) => item.url ?? item.ufsUrl)
