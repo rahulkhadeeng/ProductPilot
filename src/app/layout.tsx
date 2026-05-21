@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
-
-const font = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Product Pilot",
@@ -19,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className={font.className}>
+      <body>
         {children}
         <Toaster />
       </body>
