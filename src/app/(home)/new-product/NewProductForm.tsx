@@ -498,17 +498,14 @@ export default function NewProductForm() {
             <div className="mt-10">
               <h2 className="font-medium">Logo</h2>
               {uploadedLogoUrl ? (
-                <div className="mt-2 flex flex-wrap items-end gap-4">
+                <div className="mt-2">
                   <Image
                     src={uploadedLogoUrl}
-                    alt="Product logo"
+                    alt="logo"
                     width={1000}
                     height={1000}
                     className="h-40 w-40 rounded-md object-cover"
                   />
-                  <Button variant="outline" onClick={() => setUploadedLogoUrl("")}>
-                    Replace logo
-                  </Button>
                 </div>
               ) : (
                 <LogoUploader
@@ -527,26 +524,19 @@ export default function NewProductForm() {
                 Product Images (upload 1 to {PRODUCT_LIMITS.imageMax} images)
               </div>
               {uploadedProductImages.length > 0 ? (
-                <div className="mt-2 space-y-4">
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-                    {uploadedProductImages.map((url) => (
+                <div className="mt-2 space-y-4 md:flex md:gap-2 md:space-y-0">
+                  {uploadedProductImages.map((url) => (
+                    <div key={url} className="relative h-40 md:w-40">
                       <Image
-                        key={url}
                         priority
                         src={url}
                         alt="Uploaded Product Image"
-                        width={200}
-                        height={200}
-                        className="h-40 w-full rounded-md object-cover"
+                        fill
+                        sizes="160px"
+                        className="rounded-md object-cover"
                       />
-                    ))}
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => setUploadedProductImages([])}
-                  >
-                    Replace images
-                  </Button>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <ImagesUploader
