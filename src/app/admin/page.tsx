@@ -19,6 +19,9 @@ import {
   isUserAdmin,
 } from "@/lib/actions";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function AdminPage() {
   const isAdmin = await isUserAdmin();
 

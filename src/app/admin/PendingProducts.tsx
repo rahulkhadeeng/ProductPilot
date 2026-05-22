@@ -22,7 +22,12 @@ export default function PendingProducts({
   pendingProducts: PendingProduct[];
 }) {
   if (pendingProducts.length === 0) {
-    return <div>No pending products</div>;
+    return (
+      <div className="rounded-md border border-dashed p-8 text-sm text-muted-foreground">
+        No pending products. New submissions appear here only after the product
+        form finishes successfully.
+      </div>
+    );
   }
 
   return (

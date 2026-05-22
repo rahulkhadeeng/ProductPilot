@@ -546,6 +546,10 @@ export const activateProduct = async (productId: string) => {
       },
     });
 
+    revalidatePath("/admin");
+    revalidatePath("/products");
+    revalidatePath(`/product/${product.slug}`);
+
     await db.notification.create({
       data: {
         userId: product.userId,
@@ -588,6 +592,9 @@ export const rejectProduct = async (productId: string, reason: string) => {
         status: "REJECTED",
       },
     });
+
+    revalidatePath("/admin");
+    revalidatePath("/my-products");
 
     await db.notification.create({
       data: {
@@ -1070,8 +1077,8 @@ export const getProductsByUserId = async (userId: string) => {
 
     return products;
   } catch (error) {
-    console.log("Error getting producst by user id", error);
-    throw error;
+    console.log("Error getting products by user id", error);
+    return [];
   }
 };
 
