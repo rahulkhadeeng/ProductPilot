@@ -163,7 +163,6 @@ const ProductModalContent = ({
       setCommentText("");
 
       setComments([
-        ...comments,
         {
           id: savedComment?.id ?? `optimistic-${Date.now()}`,
           user:
@@ -183,6 +182,7 @@ const ProductModalContent = ({
             authenticatedUser.user.email ??
             "Community member",
         },
+        ...comments,
       ]);
       toast.success("Comment posted.", { position: "top-right" });
     } catch (error) {
@@ -300,7 +300,16 @@ const ProductModalContent = ({
           <CarouselComponent productImages={currentProduct.images} />
 
           <div className="py-10 ">
-            <h1 className="font-semibold py-10">Community Feedback</h1>
+            <div className="py-10">
+              <h1 className="font-semibold">Community Feedback</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {comments.length === 0
+                  ? "Be the first to start the conversation."
+                  : `${comments.length} comment${
+                      comments.length === 1 ? "" : "s"
+                    } from the community.`}
+              </p>
+            </div>
 
             <div className="border-t border-b py-2">
               <div className="w-full flex items-center gap-4">
@@ -346,6 +355,9 @@ const ProductModalContent = ({
               </div>
 
               <div className="flex justify-end mt-4">
+                <p className="mr-auto pt-2 text-xs text-muted-foreground">
+                  {commentText.trim().length}/1000
+                </p>
                 {authenticatedUser ? (
                   <button
                     onClick={handleCommentSubmit}
@@ -365,9 +377,10 @@ const ProductModalContent = ({
               </div>
             </div>
 
-            <div className="py-10 space-y-8">
-              {comments.map((comment) => (
-                <div key={comment.id} className="flex gap-4">
+            {comments.length > 0 ? (
+              <div className="py-10 space-y-8">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="flex gap-4">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={comment.profile} />
 
@@ -414,9 +427,17 @@ const ProductModalContent = ({
                       {comment.body}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="my-10 rounded-md border border-dashed p-8 text-center">
+                <h2 className="text-xl font-semibold">No comments yet</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Share a useful first impression, question, or launch feedback.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ const HeroSection = () => {
                 "ml-2 inline animate-gradient bg-gradient-to-r from-[#ff8c00] via-[#6b23b4] to-[#ff8c00] bg-[length:var(--bg-size)_100%] bg-clip-text text-xs font-medium text-transparent md:text-sm"
               )}
             >
-              Introducing ProductSphere
+              Introducing ProductPilot
             </span>
             <ChevronRight className="ml-1 size-3 transition-all duration-300 ease-in-out group-hover:translate-x-0.5 will-change-transform" />
           </AnimatedGradientText>
@@ -59,7 +59,7 @@ const HeroSection = () => {
         >
           <div className="rounded-lg lg:rounded-[24px] border p-2 border-neutral-300 bg-white">
             <Image
-              src="/hero.png"
+              src=""
               alt=""
               width={1920}
               height={1080}

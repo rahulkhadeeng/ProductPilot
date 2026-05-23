@@ -22,17 +22,17 @@ const FooterSection = () => {
 
           <p className="text-foreground/70 mt-4 text-sm text-start max-w-xs">
             Discover, showcase, and support innovative products on
-            ProductSphere.
+            ProductPilot.
           </p>
 
           <div className="mt-4 text-sm text-foreground/70">
             Built with passion by{" "}
             <Link
-              href="https://github.com/Abhish7k"
+              href="https://github.com/rahulkhadeeng"
               className="hover:text-foreground transition-all duration-300"
               target="_blank"
             >
-              Abhish7k
+              Rahul Khade
             </Link>
           </div>
         </div>
@@ -65,7 +65,7 @@ const FooterSection = () => {
       {/* Footer Bottom Section */}
       <div className="mt-8 border-t border-border/40 pt-4 md:pt-8 md:flex md:items-center md:justify-between w-full">
         <p className="text-sm text-muted-foreground mt-8 md:mt-0">
-          &copy; 2024 ProductSphere. All rights reserved.
+          &copy; 2024 ProductPilot. All rights reserved.
         </p>
       </div>
     </footer>

@@ -35,6 +35,19 @@ type NotificationsListProps = {
   notifications: NotificationListItem[];
 };
 
+type NotificationFilter = "ALL" | "UNREAD" | "COMMENTS" | "UPVOTES" | "REVIEWS";
+
+const filters: {
+  value: NotificationFilter;
+  label: string;
+}[] = [
+  { value: "ALL", label: "All" },
+  { value: "UNREAD", label: "Unread" },
+  { value: "COMMENTS", label: "Comments" },
+  { value: "UPVOTES", label: "Upvotes" },
+  { value: "REVIEWS", label: "Reviews" },
+];
+
 function timeAgo(value: Date | string) {
   const createdAt = new Date(value);
   const seconds = Math.max(
@@ -77,12 +90,35 @@ export default function NotificationsList({
 }: NotificationsListProps) {
   const [items, setItems] = useState(notifications);
   const [pendingIds, setPendingIds] = useState<string[]>([]);
+  const [activeFilter, setActiveFilter] = useState<NotificationFilter>("ALL");
   const [isMarkingAll, startMarkingAll] = useTransition();
 
   const unreadCount = useMemo(
     () => items.filter((item) => item.status === "UNREAD").length,
     [items]
   );
+
+  const filteredItems = useMemo(() => {
+    if (activeFilter === "UNREAD") {
+      return items.filter((item) => item.status === "UNREAD");
+    }
+
+    if (activeFilter === "COMMENTS") {
+      return items.filter((item) => item.type === "COMMENT");
+    }
+
+    if (activeFilter === "UPVOTES") {
+      return items.filter((item) => item.type === "UPVOTE");
+    }
+
+    if (activeFilter === "REVIEWS") {
+      return items.filter(
+        (item) => item.type === "ACTIVATED" || item.type === "REJECTED"
+      );
+    }
+
+    return items;
+  }, [activeFilter, items]);
 
   const markOne = async (notificationId: string) => {
     const notification = items.find((item) => item.id === notificationId);
@@ -159,6 +195,30 @@ export default function NotificationsList({
         <Badge variant="outline">{items.length} total</Badge>
       </div>
 
+      {items.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {filters.map((filter) => {
+            const active = activeFilter === filter.value;
+
+            return (
+              <button
+                key={filter.value}
+                type="button"
+                onClick={() => setActiveFilter(filter.value)}
+                className={cn(
+                  "rounded-md border px-3 py-2 text-sm font-medium transition-all",
+                  active
+                    ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                    : "text-muted-foreground hover:border-indigo-300 hover:text-foreground"
+                )}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {items.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-14 text-center">
@@ -170,9 +230,21 @@ export default function NotificationsList({
             </p>
           </CardContent>
         </Card>
+      ) : filteredItems.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <Bell className="h-8 w-8 text-muted-foreground" />
+            <h2 className="mt-4 text-lg font-semibold">
+              No matching notifications
+            </h2>
+            <p className="mt-2 max-w-md text-sm text-muted-foreground">
+              Try another filter to review the rest of your activity.
+            </p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-3">
-          {items.map((notification) => {
+          {filteredItems.map((notification) => {
             const isUnread = notification.status === "UNREAD";
             const productHref = notification.product?.slug
               ? `/product/${notification.product.slug}`

@@ -5,14 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { FaExclamation } from "react-icons/fa";
-import { PiCaretUpFill, PiTrash } from "react-icons/pi";
+import { PiCaretUpFill, PiTrash, PiUploadSimple } from "react-icons/pi";
 import { toast } from "sonner";
 
 import CarouselComponent from "@/components/CarouselComponent";
 import AuthContent from "@/components/navbar/AuthContent";
+import ShareModalContent from "@/components/ShareProductModalContent";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import Modal from "@/components/ui/modal/modal";
+import ShareModal from "@/components/ui/modal/ShareProductModal";
 import { commentOnProduct, deleteComment, upvoteProduct } from "@/lib/actions";
 import type {
   AuthSession,
@@ -41,6 +43,7 @@ export default function ProductDetailCommunity({
   const [isUpvotePending, setIsUpvotePending] = useState(false);
   const [isCommentPending, setIsCommentPending] = useState(false);
   const [deletingCommentIds, setDeletingCommentIds] = useState<string[]>([]);
+  const [shareModalVisible, setShareModalVisible] = useState(false);
 
   const handleUpvoteClick = async () => {
     if (isUpvotePending) {
@@ -109,7 +112,6 @@ export default function ProductDetailCommunity({
 
       setCommentText("");
       setComments((current) => [
-        ...current,
         {
           id: savedComment?.id ?? `comment-${Date.now()}`,
           user:
@@ -129,6 +131,7 @@ export default function ProductDetailCommunity({
             user.email ??
             "Community member",
         },
+        ...current,
       ]);
       toast.success("Comment posted.", { position: "top-right" });
     } catch (error) {
@@ -191,6 +194,15 @@ export default function ProductDetailCommunity({
         <div className="flex items-start gap-2">
           <button
             type="button"
+            onClick={() => setShareModalVisible(true)}
+            className="hidden items-center justify-center gap-2 rounded border px-3 py-1 font-medium transition-all duration-300 hover:border-indigo-500 active:scale-90 sm:flex sm:px-5 sm:py-2"
+          >
+            <PiUploadSimple />
+            Share
+          </button>
+
+          <button
+            type="button"
             onClick={handleUpvoteClick}
             disabled={isUpvotePending}
             className={`flex items-center justify-center gap-2 rounded border px-3 py-1 font-medium transition-all duration-300 active:scale-90 sm:px-4 sm:py-2 ${
@@ -236,9 +248,29 @@ export default function ProductDetailCommunity({
         <CarouselComponent productImages={product.images} />
       </div>
 
-      <h2 className="border-b pb-5 pt-20 text-xl font-semibold">
-        Community Feedback
-      </h2>
+      <div className="border-b pb-5 pt-20">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold">Community Feedback</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {comments.length === 0
+                ? "Be the first to start the conversation."
+                : `${comments.length} comment${
+                    comments.length === 1 ? "" : "s"
+                  } from the community.`}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShareModalVisible(true)}
+            className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-foreground/80 transition-all duration-300 hover:border-indigo-500 active:scale-90 sm:hidden"
+          >
+            <PiUploadSimple />
+            Share
+          </button>
+        </div>
+      </div>
 
       <div className="border-b py-2">
         <div className="flex w-full items-center gap-4">
@@ -281,9 +313,14 @@ export default function ProductDetailCommunity({
         </div>
 
         <div className="mt-4 flex justify-end">
+          <p className="mr-auto pt-2 text-xs text-muted-foreground">
+            {commentText.trim().length}/1000
+          </p>
           <button
             type="button"
-            onClick={authenticatedUser ? handleCommentSubmit : () => setShowLoginModal(true)}
+            onClick={
+              authenticatedUser ? handleCommentSubmit : () => setShowLoginModal(true)
+            }
             disabled={isCommentPending}
             className="rounded-md border px-3 py-2 text-sm text-foreground/80 transition-all duration-300 hover:border-[#ff6154] active:scale-90 disabled:pointer-events-none disabled:opacity-60"
           >
@@ -346,10 +383,17 @@ export default function ProductDetailCommunity({
           ))}
         </div>
       ) : (
-        <div className="pt-4">
-          <h2 className="text-xl">No comments yet</h2>
+        <div className="rounded-md border border-dashed p-8 text-center">
+          <h2 className="text-xl font-semibold">No comments yet</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Share a useful first impression, question, or launch feedback.
+          </p>
         </div>
       )}
+
+      <ShareModal visible={shareModalVisible} setVisible={setShareModalVisible}>
+        <ShareModalContent currentProduct={product} />
+      </ShareModal>
 
       <Modal visible={showLoginModal} setVisible={setShowLoginModal}>
         <AuthContent />

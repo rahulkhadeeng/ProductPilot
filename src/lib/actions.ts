@@ -336,6 +336,9 @@ export const getProductById = async (productId: string) => {
         images: true,
         upvotes: true,
         comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
           include: {
             user: true,
           },
@@ -450,6 +453,9 @@ export const getActiveProducts = async () => {
           },
         },
         comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
           include: {
             user: true,
           },
@@ -896,6 +902,9 @@ export const getProductBySlug = async (slug: string) => {
         },
         categories: true,
         comments: {
+          orderBy: {
+            createdAt: "desc",
+          },
           include: {
             user: true,
           },
@@ -993,10 +1002,6 @@ export const getNotifications = async () => {
         createdAt: "desc",
       },
     });
-
-    if (notifications.length === 0) {
-      return null;
-    }
 
     return notifications;
   } catch (error) {
