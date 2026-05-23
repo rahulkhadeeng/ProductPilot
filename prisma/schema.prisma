@@ -9,24 +9,21 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
-  emailVerified DateTime?
+  email         String?        @unique
   image         String?
-  isPremium     Boolean   @default(false)
-  isAdmin       Boolean   @default(false)
-
-  accounts Account[]
-  sessions Session[]
-
-  products      Product[]
+  createdAt     DateTime       @default(now())
+  emailVerified DateTime?
+  updatedAt     DateTime       @updatedAt
+  isAdmin       Boolean        @default(false)
+  isPremium     Boolean        @default(false)
+  accounts      Account[]
   comments      Comment[]
-  upvotes       Upvote[]
   notifications Notification[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  products      Product[]
+  sessions      Session[]
+  upvotes       Upvote[]
 }
 
 model Account {
@@ -35,15 +32,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -53,8 +49,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -66,30 +61,27 @@ model VerificationToken {
 }
 
 model Product {
-  id          String @id @default(cuid())
-  name        String
-  slug        String @unique
-  headline    String
-  description String
-  logo        String
-  releaseDate String
-  website     String
-  twitter     String
-  instagram   String
-  rank        Int    @default(0)
-  status      Status @default(PENDING)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  categories    Category[]
-  images        Image[]
+  id            String         @id @default(cuid())
+  description   String
+  userId        String
+  createdAt     DateTime       @default(now())
+  headline      String
+  instagram     String
+  logo          String
+  name          String
+  rank          Int            @default(0)
+  releaseDate   String
+  slug          String         @unique
+  twitter       String
+  updatedAt     DateTime       @updatedAt
+  website       String
+  status        Status         @default(PENDING)
   comments      Comment[]
-  upvotes       Upvote[]
+  images        Image[]
   notifications Notification[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  upvotes       Upvote[]
+  categories    Category[]     @relation("CategoryToProduct")
 
   @@index([userId])
   @@index([status])
@@ -98,48 +90,57 @@ model Product {
 model Category {
   id       String    @id @default(cuid())
   name     String    @unique
-  products Product[]
+  products Product[] @relation("CategoryToProduct")
 }
 
 model Image {
   id        String   @id @default(cuid())
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
 }
 
 model Comment {
-  id             String @id @default(cuid())
-  profilePicture String
+  id             String   @id @default(cuid())
+  userId         String
+  productId      String
+  createdAt      DateTime @default(now())
   body           String
-
-  userId    String
-  productId String
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  profilePicture String
+  updatedAt      DateTime @updatedAt
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Upvote {
-  id String @id @default(cuid())
-
+  id        String   @id @default(cuid())
   userId    String
   productId String
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
+}
+
+model Notification {
+  id             String             @id @default(cuid())
+  userId         String
+  body           String
+  profilePicture String
+  productId      String
+  commentId      String?
+  type           NotificationType
+  status         NotificationStatus @default(UNREAD)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  product        Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Status {
@@ -158,22 +159,4 @@ enum NotificationType {
   COMMENT
   ACTIVATED
   REJECTED
-}
-
-model Notification {
-  id             String @id @default(cuid())
-  userId         String
-  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  body           String
-  profilePicture String
-
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  commentId String?
-
-  type   NotificationType
-  status NotificationStatus @default(UNREAD)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

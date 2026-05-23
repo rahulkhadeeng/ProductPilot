@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  LayoutDashboard,
   LogOut,
   Package,
   Settings,
@@ -27,9 +28,13 @@ import {
 
 type AvatarMenuProps = {
   session: Session;
+  isAdmin?: boolean;
 };
 
-export default function AvatarMenu({ session }: AvatarMenuProps) {
+export default function AvatarMenu({
+  session,
+  isAdmin = false,
+}: AvatarMenuProps) {
   const user = session.user;
   const fallback = user?.name?.slice(0, 2) ?? user?.email?.slice(0, 2) ?? "PP";
 
@@ -56,6 +61,19 @@ export default function AvatarMenu({ session }: AvatarMenuProps) {
           </DropdownMenuLabel>
 
           <DropdownMenuSeparator />
+
+          {isAdmin && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link href="/admin" className="flex w-full gap-x-2">
+                  <LayoutDashboard className="text-xl" />
+                  Admin Dashboard
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+            </>
+          )}
 
           <DropdownMenuItem asChild>
             <Link href="/my-products" className="flex w-full gap-x-2">

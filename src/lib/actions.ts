@@ -1005,6 +1005,61 @@ export const getNotifications = async () => {
   }
 };
 
+export const getNavbarData = async ({
+  userId,
+  email,
+}: {
+  userId?: string | null;
+  email?: string | null;
+}) => {
+  try {
+    if (!userId && !email) {
+      return {
+        isAdmin: false,
+        notifications: [],
+      };
+    }
+
+    const user = await db.user.findFirst({
+      where: {
+        OR: [
+          ...(userId ? [{ id: userId }] : []),
+          ...(email ? [{ email }] : []),
+        ],
+      },
+      select: {
+        isAdmin: true,
+        notifications: {
+          take: 20,
+          include: {
+            product: {
+              select: {
+                name: true,
+                slug: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    return {
+      isAdmin: user?.isAdmin ?? false,
+      notifications: user?.notifications ?? [],
+    };
+  } catch (error) {
+    console.log("Error getting navbar data", error);
+
+    return {
+      isAdmin: false,
+      notifications: [],
+    };
+  }
+};
+
 export const markNotificationAsRead = async (notificationId: string) => {
   try {
     const authenticatedUser = await auth();

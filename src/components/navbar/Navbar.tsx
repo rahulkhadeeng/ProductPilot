@@ -25,9 +25,14 @@ type NavbarProps = {
   session: Session | null;
   notifications?: NavbarNotification[];
   products?: unknown;
+  isAdmin?: boolean;
 };
 
-export default function Navbar({ session, notifications = [] }: NavbarProps) {
+export default function Navbar({
+  session,
+  notifications = [],
+  isAdmin = false,
+}: NavbarProps) {
   const [authModalVisible, setAuthModalVisible] = useState(false);
   const unreadNotifications = notifications.filter(
     (notification) => notification.status === "UNREAD"
@@ -54,7 +59,7 @@ export default function Navbar({ session, notifications = [] }: NavbarProps) {
             <div className="flex items-center gap-5">
               <SubmitButton />
               <NotificationIcon notifications={notifications} />
-              <AvatarMenu session={session} />
+              <AvatarMenu session={session} isAdmin={isAdmin} />
             </div>
           ) : (
             <Dialog

@@ -1,5 +1,5 @@
 import Navbar from "@/components/navbar/Navbar";
-import { getNotifications } from "@/lib/actions";
+import { getNavbarData } from "@/lib/actions";
 import { auth } from "@/lib/auth/auth";
 
 const HomeLayout = async ({
@@ -8,13 +8,22 @@ const HomeLayout = async ({
   children: React.ReactNode;
 }>) => {
   const session = await auth();
-  const notifications = session?.user?.id ? await getNotifications() : [];
+  const navbarData = session?.user
+    ? await getNavbarData({
+        userId: session.user.id,
+        email: session.user.email,
+      })
+    : {
+        isAdmin: false,
+        notifications: [],
+      };
 
   return (
     <div className="flex min-h-full flex-col">
       <Navbar
         session={session}
-        notifications={notifications ?? []}
+        notifications={navbarData.notifications}
+        isAdmin={navbarData.isAdmin}
       />
       {children}
     </div>
