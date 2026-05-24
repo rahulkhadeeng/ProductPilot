@@ -1,18 +1,22 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { LuLoader } from "react-icons/lu";
 import { PiCheckCircle, PiEye, PiXCircle } from "react-icons/pi";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import Modal from "@/components/ui/modal/modal";
 import { activateProduct, rejectProduct } from "@/lib/actions";
 
 type PendingProduct = {
   id: string;
   name: string;
+  slug: string;
   headline: string;
   description: string;
   logo: string;
@@ -20,6 +24,13 @@ type PendingProduct = {
   website: string;
   twitter: string;
   instagram: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+  };
   categories: { id: string; name: string }[];
   images: { id: string; url: string }[];
 };
@@ -73,31 +84,37 @@ export default function AdminProductActions({
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-2 md:gap-x-4 lg:flex-row">
-        <button
+      <div className="flex shrink-0 items-center justify-end gap-2 lg:min-w-64">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
           onClick={() => setViewVisible(true)}
-          className="rounded-md bg-[#ff6154] px-6 py-2 text-center text-sm text-white transition-all duration-300 hover:bg-[#ff4437]"
         >
+          <PiEye className="h-4 w-4" />
           View
-        </button>
+        </Button>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setApproveVisible(true)}
-            className="rounded-md bg-emerald-100 p-2 text-center text-sm transition-all duration-300 hover:bg-emerald-200 md:px-4 md:py-2"
-            aria-label={`Approve ${product.name}`}
-          >
-            <PiCheckCircle className="text-xl text-emerald-500" />
-          </button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon-sm"
+          onClick={() => setApproveVisible(true)}
+          aria-label={`Approve ${product.name}`}
+          className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+        >
+          <PiCheckCircle className="h-4 w-4" />
+        </Button>
 
-          <button
-            onClick={() => setRejectVisible(true)}
-            className="rounded-md bg-red-100 p-2 text-center text-sm transition-all duration-300 hover:bg-red-200 md:px-4 md:py-2"
-            aria-label={`Reject ${product.name}`}
-          >
-            <PiXCircle className="text-xl text-red-500" />
-          </button>
-        </div>
+        <Button
+          type="button"
+          variant="destructive"
+          size="icon-sm"
+          onClick={() => setRejectVisible(true)}
+          aria-label={`Reject ${product.name}`}
+        >
+          <PiXCircle className="h-4 w-4" />
+        </Button>
       </div>
 
       <Modal visible={viewVisible} setVisible={setViewVisible}>
@@ -122,18 +139,35 @@ export default function AdminProductActions({
           <p className="mt-6 text-gray-600">{product.description}</p>
 
           <div className="mt-6 grid gap-4 text-sm md:grid-cols-2">
-            <Info label="Website" value={product.website} />
+            <Info label="Slug" value={product.slug} />
             <Info label="Release Date" value={product.releaseDate} />
+            <Info
+              label="Submitted By"
+              value={product.user.name ?? product.user.email ?? "Unknown creator"}
+            />
+            <Info label="Email" value={product.user.email ?? "Not provided"} />
             <Info label="Twitter" value={product.twitter || "Not provided"} />
             <Info
               label="Instagram"
               value={product.instagram || "Not provided"}
             />
-            <Info
-              label="Categories"
-              value={product.categories.map((category) => category.name).join(", ")}
-            />
           </div>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {product.categories.map((category) => (
+              <Badge key={category.id} variant="secondary">
+                {category.name}
+              </Badge>
+            ))}
+          </div>
+
+          {product.website && (
+            <Button asChild className="mt-6">
+              <Link href={product.website} target="_blank" rel="noreferrer">
+                Open website
+              </Link>
+            </Button>
+          )}
 
           {product.images.length > 0 && (
             <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3">

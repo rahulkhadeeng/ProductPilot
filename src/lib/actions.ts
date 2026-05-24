@@ -423,7 +423,19 @@ export const getPendingProducts = async () => {
       },
       include: {
         categories: true,
-        images: true,
+        images: {
+          orderBy: {
+            updatedAt: "desc",
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
       },
 
       // get the most recent first
