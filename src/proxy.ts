@@ -11,6 +11,7 @@ const protectedRoutes = [
   "/my-products",
   "/my-upvoted",
   "/notifications",
+  "/payment/success",
 ];
 
 export default auth(async function middleware(req) {
@@ -34,5 +35,6 @@ export const config = {
     "/my-products/:path*",
     "/my-upvoted/:path*",
     "/notifications/:path*",
+    "/payment/success/:path*",
   ],
 };

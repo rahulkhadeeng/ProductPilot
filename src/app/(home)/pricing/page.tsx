@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircleIcon } from "lucide-react";
+import Link from "next/link";
 
 import {
   Card,
@@ -25,6 +26,8 @@ const plans = [
       "Limited upvotes on other products",
       "Notifications for comments and upvotes",
     ],
+    href: "/products",
+    cta: "Browse products",
   },
   {
     name: "Premium",
@@ -38,6 +41,8 @@ const plans = [
       "Personalized product launch insights",
       "Premium support and feedback",
     ],
+    href: "/settings",
+    cta: "Upgrade with Stripe",
   },
 ];
 
@@ -110,12 +115,15 @@ export default function PricingPage() {
             </CardContent>
 
             <CardFooter className="mt-auto w-full">
-              <button className="group relative flex w-full transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md border border-white bg-indigo-500 px-2 py-1 font-medium text-white transition-all duration-300 hover:ring-2 hover:ring-indigo-500 hover:ring-offset-1 active:scale-95 sm:px-4 sm:py-1.5">
+              <Link
+                href={plan.href}
+                className="group relative flex w-full transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md border border-white bg-indigo-500 px-2 py-1 font-medium text-white transition-all duration-300 hover:ring-2 hover:ring-indigo-500 hover:ring-offset-1 active:scale-95 sm:px-4 sm:py-1.5"
+              >
                 <span className="relative z-10 flex items-center gap-2">
-                  Get Started
+                  {plan.cta}
                 </span>
                 <div className="absolute -left-[75px] -top-[50px] -z-10 h-[155px] w-8 rotate-[35deg] bg-white opacity-20 transition-all duration-500 group-hover:left-[120%]" />
-              </button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

@@ -126,7 +126,7 @@ export default async function SettingsPage() {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {premium
-                      ? "Billing management is ready for Stripe wiring."
+                      ? "Manage your subscription in Stripe."
                       : `${ownerProducts.length}/2 free products used.`}
                   </p>
                 </div>

@@ -95,6 +95,23 @@ export const createProduct = async ({
     }
 
     const userId = authenticatedUser.user.id;
+    const [user, productCount] = await Promise.all([
+      db.user.findUnique({
+        where: { id: userId },
+        select: { isPremium: true },
+      }),
+      db.product.count({
+        where: { userId },
+      }),
+    ]);
+
+    if (!user?.isPremium && productCount >= 2) {
+      return {
+        success: false,
+        error:
+          "The free plan includes up to 2 product submissions. Upgrade to Premium for unlimited launches.",
+      };
+    }
 
     const product = await db.product.create({
       data: {
