@@ -29,7 +29,7 @@ export default function MobileNav({
         <DialogContent>
           <DialogTitle className="flex items-center justify-start gap-2">
             <Image src="/logo.svg" alt="logo" width={30} height={30} />
-            <span className="text-3xl text-indigo-600">Product Pilot</span>
+            <span className="text-3xl text-indigo-600">ProductPilot</span>
           </DialogTitle>
 
           <div className="mt-6 flex flex-col gap-5">

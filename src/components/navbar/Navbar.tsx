@@ -45,7 +45,7 @@ export default function Navbar({
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.svg" alt="logo" height={26} width={26} />
             <h1 className="hidden text-[23px] font-bold text-indigo-600 transition-all min-[400px]:block">
-              Product Pilot
+              ProductPilot
             </h1>
           </Link>
 

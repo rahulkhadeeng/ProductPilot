@@ -76,7 +76,7 @@ export default async function AdminPage() {
           <Link href="/">
             <Image
               src="/logo.svg"
-              alt="Product Pilot logo"
+              alt="ProductPilot logo"
               width={500}
               height={500}
               className="h-14 w-14 cursor-pointer rounded-md transition-all md:h-20 md:w-20"
@@ -88,7 +88,7 @@ export default async function AdminPage() {
               Admin Dashboard
             </h1>
             <p className="text-sm text-gray-500 transition-all md:text-base">
-              Review launches, monitor growth, and keep Product Pilot moving.
+              Review launches, monitor growth, and keep ProductPilot moving.
             </p>
           </div>
         </div>

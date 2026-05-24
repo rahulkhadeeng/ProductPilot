@@ -95,7 +95,7 @@ export default async function SettingsPage() {
 
                 <div className="min-w-0 flex-1">
                   <h2 className="truncate text-xl font-semibold">
-                    {session.user.name ?? "Product Pilot user"}
+                    {session.user.name ?? "ProductPilot user"}
                   </h2>
                   <p className="truncate text-sm text-muted-foreground">
                     {session.user.email}

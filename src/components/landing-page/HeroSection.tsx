@@ -1,19 +1,17 @@
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronRight, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
 import AnimatedGradientText from "../ui/animated-gradient-text";
 import { cn } from "@/lib/utils";
 
 const HeroSection = () => {
   return (
-    <div className="px-6 xl:px-[15%] flex flex-col items-center justify-start transition-all">
-      <div
-        className="pt-24  flex flex-col items-center w-full text-center"
-      >
-        {/* badge */}
-        <div className="z-10 mb-5 md:mb-10 flex items-center justify-center">
+    <div className="flex flex-col items-center justify-start px-6 transition-all xl:px-[15%]">
+      <div className="flex w-full flex-col items-center pt-24 text-center">
+        <div className="z-10 mb-5 flex items-center justify-center md:mb-10">
           <AnimatedGradientText>
-            🎉
+            <Sparkles className="ml-1 h-3.5 w-3.5 text-indigo-500" />
             <span
               className={cn(
                 "ml-2 inline animate-gradient bg-gradient-to-r from-[#ff8c00] via-[#6b23b4] to-[#ff8c00] bg-[length:var(--bg-size)_100%] bg-clip-text text-xs font-medium text-transparent md:text-sm"
@@ -25,12 +23,11 @@ const HeroSection = () => {
           </AnimatedGradientText>
         </div>
 
-        {/*  */}
-        <h1 className="text-2xl min-[400px]:text-3xl min-[500px]:text-4xl min-[620px]:text-5xl md:text-6xl md:max-w-2xl lg:!leading-[3.75rem] font-medium tracking-tight transition-all">
+        <h1 className="text-2xl font-medium tracking-tight transition-all min-[400px]:text-3xl min-[500px]:text-4xl min-[620px]:text-5xl md:max-w-2xl md:text-6xl lg:!leading-[3.75rem]">
           Your ultimate platform to <br /> discover new products
         </h1>
 
-        <p className="mt-2 md:mt-4 max-w-sm md:max-w-[26rem] md:text-lg text-foreground/70 font-medium leading-6 transition-all">
+        <p className="mt-2 max-w-sm font-medium leading-6 text-foreground/70 transition-all md:mt-4 md:max-w-[26rem] md:text-lg">
           Discover, share, and discuss the latest products in tech and
           innovation.
         </p>
@@ -39,10 +36,10 @@ const HeroSection = () => {
           href="/products"
           className="group relative mt-10 flex transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-indigo-500 px-6 py-1.5 font-medium text-white transition-all duration-300 hover:ring-2 hover:ring-indigo-500 hover:ring-offset-1 active:scale-90"
         >
-          <span className="group relative z-10 flex items-center gap-2 md:text-lg transition-all">
+          <span className="group relative z-10 flex items-center gap-2 transition-all md:text-lg">
             Discover
             <ArrowRight
-              className="size-4 group-hover:translate-x-1 transition-all duration-500"
+              className="size-4 transition-all duration-500 group-hover:translate-x-1"
               strokeWidth={1}
             />
           </span>
@@ -52,15 +49,13 @@ const HeroSection = () => {
       </div>
 
       <div className="relative mt-5">
-        <div className="absolute top-1/2 left-1/2 -z-10 gradient w-full -translate-x-1/2 h-3/4 -translate-y-1/2 inset-0 blur-[10rem]"></div>
+        <div className="gradient absolute inset-0 left-1/2 top-1/2 -z-10 h-3/4 w-full -translate-x-1/2 -translate-y-1/2 blur-[10rem]" />
 
-        <div
-          className="relative mx-auto mb-10 mt-12 max-w-5xl rounded-xl border border-neutral-300 bg-neutral-200/20 p-2 backdrop-blur-lg lg:rounded-[32px] md:p-4"
-        >
-          <div className="rounded-lg lg:rounded-[24px] border p-2 border-neutral-300 bg-white">
+        <div className="relative mx-auto mb-10 mt-12 max-w-5xl rounded-xl border border-neutral-300 bg-neutral-200/20 p-2 backdrop-blur-lg md:p-4 lg:rounded-[32px]">
+          <div className="rounded-lg border border-neutral-300 bg-white p-2 lg:rounded-[24px]">
             <Image
-              src=""
-              alt=""
+              src="/product-pilot-hero.svg"
+              alt="ProductPilot product discovery dashboard preview"
               width={1920}
               height={1080}
               loading="eager"

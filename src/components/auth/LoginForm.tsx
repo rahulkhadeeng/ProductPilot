@@ -25,7 +25,7 @@ export function LoginForm({ className, compact = false }: LoginFormProps) {
       <CardHeader className="items-center text-center">
         <Image
           src="/logo.svg"
-          alt="Product Pilot logo"
+          alt="ProductPilot logo"
           width={compact ? 72 : 88}
           height={compact ? 72 : 88}
           className="mb-2"

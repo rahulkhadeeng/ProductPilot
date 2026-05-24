@@ -13,7 +13,7 @@ const TestimonialSection = () => {
         </h2>
 
         <p className="text-muted-foreground mt-4 max-w-md mx-auto">
-          Discover how ProductSphere helps creators and innovators shine.
+          Discover how ProductPilot helps creators and innovators shine.
           Here&apos;s what real users are saying about us.
         </p>
       </div>

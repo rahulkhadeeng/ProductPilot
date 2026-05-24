@@ -16,8 +16,8 @@ export default async function LoginPage() {
     <main className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
       <section className="hidden bg-zinc-950 p-10 text-white lg:flex lg:flex-col lg:justify-between">
         <Link href="/" className="flex items-center gap-2 text-lg font-medium">
-          <Image src="/logo.svg" alt="Product Pilot" width={32} height={32} />
-          Product Pilot
+          <Image src="/logo.svg" alt="ProductPilot" width={32} height={32} />
+          ProductPilot
         </Link>
 
         <blockquote className="max-w-xl space-y-3">
@@ -25,7 +25,7 @@ export default async function LoginPage() {
             “Join our community of friendly folks discovering and sharing the
             latest product in tech.”
           </p>
-          <footer className="text-sm text-zinc-400">Product Pilot</footer>
+          <footer className="text-sm text-zinc-400">ProductPilot</footer>
         </blockquote>
       </section>
 
