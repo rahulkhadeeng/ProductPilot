@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Session } from "next-auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Dialog,
@@ -18,7 +18,6 @@ import AvatarMenu from "./AvatarMenu";
 import Menu from "./Menu";
 import MobileNav from "./MobileNav";
 import NotificationIcon, { type NavbarNotification } from "./NotificationIcon";
-import Search from "./Search";
 import SubmitButton from "./SubmitButton";
 
 type NavbarProps = {
@@ -34,17 +33,45 @@ export default function Navbar({
   isAdmin = false,
 }: NavbarProps) {
   const [authModalVisible, setAuthModalVisible] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const unreadNotifications = notifications.filter(
     (notification) => notification.status === "UNREAD"
   ).length;
 
+  useEffect(() => {
+    const updateScrollState = () => setIsScrolled(window.scrollY > 12);
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
+
   return (
-    <div className="sticky top-0 z-50 h-16 border-b bg-white px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex max-w-screen-2xl items-center justify-between transition-all">
-        <div className="flex items-center gap-10">
+    <div
+      className={`sticky top-0 z-50 px-4 transition-all duration-300 ease-out ${
+        isScrolled ? "py-2" : "border-b bg-white py-3"
+      }`}
+    >
+      <div
+        className={`mx-auto flex items-center justify-between transition-all duration-300 ease-out ${
+          isScrolled
+            ? "max-w-5xl rounded-full border border-foreground/10 bg-white/80 px-3 py-1.5 shadow-lg shadow-black/5 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 md:px-4"
+            : "max-w-screen-2xl"
+        }`}
+      >
+        <div
+          className={`flex items-center transition-all duration-300 ease-out ${
+            isScrolled ? "gap-4 md:gap-6" : "gap-10"
+          }`}
+        >
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.svg" alt="logo" height={26} width={26} />
-            <h1 className="hidden text-[23px] font-bold text-indigo-600 transition-all min-[400px]:block">
+            <h1
+              className={`hidden font-bold text-indigo-600 transition-all duration-300 ease-out min-[400px]:block ${
+                isScrolled ? "text-[20px]" : "text-[23px]"
+              }`}
+            >
               ProductPilot
             </h1>
           </Link>
@@ -52,11 +79,17 @@ export default function Navbar({
           <Menu />
         </div>
 
-        <div className="flex items-center gap-2 md:gap-5">
-          <Search />
-
+        <div
+          className={`flex items-center transition-all duration-300 ease-out ${
+            isScrolled ? "gap-1.5 md:gap-3" : "gap-2 md:gap-5"
+          }`}
+        >
           {session ? (
-            <div className="flex items-center gap-5">
+            <div
+              className={`flex items-center transition-all duration-300 ease-out ${
+                isScrolled ? "gap-3" : "gap-5"
+              }`}
+            >
               <SubmitButton />
               <NotificationIcon notifications={notifications} />
               <AvatarMenu session={session} isAdmin={isAdmin} />
