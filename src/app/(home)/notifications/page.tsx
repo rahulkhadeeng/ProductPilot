@@ -17,7 +17,7 @@ export default async function NotificationsPage() {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all lg:w-4/5 xl:w-3/5">
+      <main className="site-container-narrow py-8 transition-all">
         <UserDashboardNav />
         <NotificationsList notifications={notifications ?? []} />
       </main>

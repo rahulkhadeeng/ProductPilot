@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 const HowItWorksSection = () => {
   return (
     <div
-      className="flex flex-col items-center justify-center px-10 xl:px-[15%] mt-60 mb-40"
+      className="site-container-wide flex flex-col items-center justify-center mt-48 mb-32"
     >
       <div className="text-center">
         <h2 className="text-3xl min-[470px]:text-4xl sm:text-4xl md:text-5xl font-medium transition-all">
@@ -43,7 +43,7 @@ function MainSection() {
     },
   ];
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10 pt-20 max-w-7xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10 pt-16 w-full mx-auto">
       {features.map((feature, index) => (
         <Feature key={feature.title} {...feature} index={index} />
       ))}

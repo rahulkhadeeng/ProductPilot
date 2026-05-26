@@ -57,7 +57,7 @@ export default function Navbar({
         className={`mx-auto flex items-center justify-between transition-all duration-300 ease-out ${
           isScrolled
             ? "max-w-5xl rounded-full border border-foreground/10 bg-white/80 px-3 py-1.5 shadow-lg shadow-black/5 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 md:px-4"
-            : "max-w-screen-2xl"
+            : "site-container-wide"
         }`}
       >
         <div

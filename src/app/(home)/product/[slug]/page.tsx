@@ -81,7 +81,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all lg:w-3/5 lg:px-0">
+      <main className="site-container-narrow py-8 transition-all">
         <ProductDetailCommunity
           product={formatProductForCommunity(product)}
           authenticatedUser={authenticatedUser}

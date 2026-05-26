@@ -70,8 +70,8 @@ export default async function AdminPage() {
   ];
 
   return (
-    <main className="mx-auto max-w-screen-2xl px-6 pb-12 transition-all md:px-12 xl:px-20">
-      <div className="flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between">
+    <main className="site-container-wide pb-12 transition-all">
+      <div className="flex flex-col gap-5 py-8 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-x-5">
           <Link href="/">
             <Image
@@ -123,7 +123,7 @@ export default async function AdminPage() {
         <MetricCard title="Upvotes" value={totalUpvotesCount ?? 0} icon={ThumbsUp} />
       </section>
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[1fr_420px]">
+      <section className="mt-8 grid gap-5 xl:grid-cols-[1fr_420px]">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Platform Overview</CardTitle>

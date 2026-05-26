@@ -18,7 +18,7 @@ export default async function MyUpvotedProductsPage() {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 pt-10 transition-all lg:w-4/5 xl:w-3/5">
+      <main className="site-container-narrow pt-8 transition-all">
         <UserDashboardNav />
 
         {products.length === 0 ? (
@@ -39,7 +39,7 @@ export default async function MyUpvotedProductsPage() {
               </p>
             </div>
 
-            <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-10 px-5 transition-all sm:grid-cols-3 sm:px-0 md:grid-cols-4 2xl:grid-cols-5">
+            <div className="mt-8 grid grid-cols-2 gap-x-5 gap-y-8 transition-all sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5">
               {products.map((product) => (
                 <Link href={`/product/${product.slug}`} key={product.id}>
                   <div className="rounded-lg border transition-all duration-300 hover:-translate-y-1">

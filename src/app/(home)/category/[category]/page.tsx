@@ -31,7 +31,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 pt-10 transition-all md:w-4/5 md:px-0 xl:w-3/5">
+      <main className="site-container-narrow pt-8 transition-all">
         <nav className="flex items-center gap-2 text-sm text-muted-foreground">
           <Link href="/" className="transition-colors hover:text-foreground">
             Home

@@ -21,7 +21,7 @@ export default async function MyProductsPage() {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all lg:w-3/5">
+      <main className="site-container-narrow py-8 transition-all">
         <UserDashboardNav />
 
         {products.length === 0 ? (
@@ -65,7 +65,7 @@ export default async function MyProductsPage() {
               <p className="pt-6">({products.length}/2) Free products</p>
             )}
 
-            <div className="mt-10 grid grid-cols-2 items-start gap-x-5 gap-y-10 transition-all sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5">
+            <div className="mt-8 grid grid-cols-2 items-start gap-x-5 gap-y-8 transition-all sm:grid-cols-3 md:grid-cols-4 2xl:grid-cols-5">
               {products.map((product) => {
                 return (
                   <Link

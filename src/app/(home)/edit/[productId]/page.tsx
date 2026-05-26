@@ -31,7 +31,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
   if (!product) {
     return (
       <AnimateContainer>
-        <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all md:w-4/5 md:px-0">
+        <main className="site-container py-8 transition-all">
           <BackLink />
           <h1 className="mt-10 text-4xl font-medium">Product not found</h1>
         </main>
@@ -45,7 +45,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all md:w-4/5 md:px-0">
+      <main className="site-container py-8 transition-all">
         <BackLink />
 
         <section className="flex flex-wrap items-center justify-between gap-6 py-4">

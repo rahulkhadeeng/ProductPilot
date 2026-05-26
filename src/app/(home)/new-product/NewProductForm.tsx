@@ -341,8 +341,8 @@ export default function NewProductForm() {
   }, [step]);
 
   return (
-    <div className="mx-auto flex max-w-screen-2xl flex-col items-center justify-center py-8 md:py-20">
-      <div className="w-full overflow-hidden px-8 md:mx-auto md:w-4/5">
+    <div className="site-container flex flex-col items-center justify-center py-8 md:py-16">
+      <div className="w-full overflow-hidden">
         {step < 8 && (
           <div className="mb-10">
             <div className="flex items-center justify-between text-sm text-muted-foreground">

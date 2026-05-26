@@ -9,7 +9,7 @@ export default async function CategoriesPage() {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto w-4/5 max-w-screen-xl px-6 pt-6 md:px-0 md:py-10 xl:w-3/5">
+      <main className="site-container-narrow pt-6 md:py-8">
         <section className="w-full rounded-md bg-gray-100 p-10">
           <h1 className="text-4xl font-semibold">Categories</h1>
           <p className="pt-2 text-gray-500">

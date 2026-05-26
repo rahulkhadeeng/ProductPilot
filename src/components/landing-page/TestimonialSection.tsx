@@ -5,7 +5,7 @@ import React from "react";
 const TestimonialSection = () => {
   return (
     <div
-      className="flex flex-col items-center justify-center my-52 px-10 max-w-6xl mx-auto"
+      className="site-container-wide flex flex-col items-center justify-center my-40"
     >
       <div className="mx-auto text-center">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium mt-6 transition-all">

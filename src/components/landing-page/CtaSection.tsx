@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 const CtaSection = () => {
   return (
     <div
-      className="flex flex-col items-center justify-center mb-40 max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto"
+      className="site-container flex flex-col items-center justify-center mb-32"
     >
       <div
         className="relative flex w-full flex-col items-center justify-center rounded-2xl border bg-blue-900 py-20 text-center shadow [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))]"

@@ -15,7 +15,7 @@ const ProductsPage = async ({ searchParams }: ProductsPageProps) => {
 
   return (
     <AnimateContainer>
-      <main className="w-full md:w-4/5 xl:w-3/5 mx-auto max-w-screen-xl py-10 px-5 transition-all">
+      <main className="site-container-narrow py-8 transition-all">
         <ActiveProducts activeProducts={activeProducts} query={query} />
       </main>
     </AnimateContainer>

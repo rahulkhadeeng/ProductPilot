@@ -66,7 +66,7 @@ export default async function SettingsPage() {
 
   return (
     <AnimateContainer>
-      <main className="mx-auto max-w-screen-xl px-6 py-10 transition-all lg:w-4/5 xl:w-3/5">
+      <main className="site-container-narrow py-8 transition-all">
         <UserDashboardNav />
 
         <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export default async function SettingsPage() {
           </div>
         </div>
 
-        <section className="mt-10 grid gap-4 md:grid-cols-[1.4fr_1fr]">
+        <section className="mt-8 grid gap-4 md:grid-cols-[1.4fr_1fr]">
           <Card>
             <CardHeader>
               <CardTitle>Account</CardTitle>

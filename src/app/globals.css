@@ -135,6 +135,43 @@
   }
 }
 
+@layer components {
+  .site-container {
+    width: min(calc(100% - 2rem), 64rem);
+    margin-inline: auto;
+  }
+
+  .site-container-wide {
+    width: min(calc(100% - 2rem), 72rem);
+    margin-inline: auto;
+  }
+
+  .site-container-narrow {
+    width: min(calc(100% - 2rem), 50rem);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 640px) {
+    .site-container,
+    .site-container-wide,
+    .site-container-narrow {
+      width: min(calc(100% - 3rem), var(--container-max));
+    }
+
+    .site-container {
+      --container-max: 64rem;
+    }
+
+    .site-container-wide {
+      --container-max: 72rem;
+    }
+
+    .site-container-narrow {
+      --container-max: 50rem;
+    }
+  }
+}
+
 .gradient {
   background: conic-gradient(
     from 230.29deg at 51.63% 52.16%,

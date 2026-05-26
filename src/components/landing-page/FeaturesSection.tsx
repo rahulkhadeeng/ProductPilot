@@ -12,7 +12,7 @@ import {
 const FeaturesSection = () => {
   return (
     <div
-      className="relative mx-auto my-40 flex w-full max-w-screen-xl flex-col items-center justify-center"
+      className="site-container-wide relative my-32 flex flex-col items-center justify-center"
     >
       {/* gradients */}
       {/* <div className="hidden md:block absolute top-0 -right-[30%] 2xl:-right-[40%] w-72 h-72 gradient rounded-full blur-[10rem] -z-10"></div> */}
@@ -45,8 +45,8 @@ export default FeaturesSection;
 
 function FeaturesGrid() {
   return (
-    <div className="py-20 px-10 md:px-[5%] transition-all">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 lg:gap-3 max-w-7xl mx-auto transition-all">
+    <div className="py-16 px-0 sm:px-4 transition-all">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-3 max-w-6xl mx-auto transition-all">
         {features.map((feature, idx) => (
           <div
             key={idx}

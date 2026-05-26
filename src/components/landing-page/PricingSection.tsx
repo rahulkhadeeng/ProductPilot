@@ -12,7 +12,7 @@ import { CheckCircleIcon } from "lucide-react";
 const PricingSection = () => {
   return (
     <div
-      className="flex flex-col items-center my-40"
+      className="site-container flex flex-col items-center my-32"
     >
       <div className="flex flex-col items-center justify-center mb-12 mx-10">
         <h1 className="text-4xl md:text-5xl font-medium text-center !leading-tight md:tracking-tight transition-all">
@@ -24,7 +24,7 @@ const PricingSection = () => {
         </p>
       </div>
 
-      <div className="flex flex-col min-[840px]:flex-row gap-10 transition-all px-10">
+      <div className="flex flex-col min-[840px]:flex-row gap-8 transition-all w-full max-w-4xl">
         {Plans.map((plan) => (
           <Card
             key={plan.name}
