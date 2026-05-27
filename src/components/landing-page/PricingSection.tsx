@@ -11,18 +11,18 @@ import { CheckCircleIcon } from "lucide-react";
 
 const PricingSection = () => {
   return (
-    <div className="site-container flex flex-col items-center py-18">
-      <div className="flex flex-col items-center justify-center mb-8 mx-6">
+    <div className="site-container flex flex-col items-center my-40">
+      <div className="flex flex-col items-center justify-center mb-12 mx-6">
         <h1 className="text-3xl md:text-[2.8rem] font-medium text-center !leading-tight transition-all">
           Fair pricing, unfair advantage.
         </h1>
 
-        <p className="text-sm md:text-base mt-3 text-center text-muted-foreground transition-all">
+        <p className="text-sm md:text-base mt-2 text-center text-muted-foreground transition-all">
           Get started and take your product to the next level.
         </p>
       </div>
 
-      <div className="flex flex-col min-[840px]:flex-row gap-5 transition-all w-full max-w-3xl">
+      <div className="flex flex-col min-[840px]:flex-row gap-10 transition-all w-full max-w-3xl">
         {Plans.map((plan) => (
           <Card
             key={plan.name}

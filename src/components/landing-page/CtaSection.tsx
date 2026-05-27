@@ -5,7 +5,7 @@ import { FlickeringGrid } from "@/components/ui/flickering-grid";
 
 const CtaSection = () => {
   return (
-    <div className="site-container mb-32 flex flex-col items-center justify-center">
+    <div className="site-container mb-40 flex flex-col items-center justify-center">
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-border/60 py-20 text-center">
 
         {/* FLICKERING GRID */}

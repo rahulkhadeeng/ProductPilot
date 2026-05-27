@@ -3,13 +3,13 @@ import { cn } from "@/lib/utils";
 
 const HowItWorksSection = () => {
   return (
-    <div className="site-container-wide flex flex-col items-center justify-center py-32">
+    <div className="site-container-wide flex flex-col items-center justify-center mt-60 mb-40">
       <div className="text-center">
         <h2 className="text-3xl min-[470px]:text-4xl md:text-[2.8rem] font-medium transition-all leading-tight">
           Three steps to launch <br /> your dream product
         </h2>
 
-        <p className="text-muted-foreground mt-4 text-sm md:text-base">
+        <p className="text-muted-foreground mt-6 text-sm md:text-base">
           Share your creation with the world <br /> in just 3 simple steps
         </p>
       </div>
@@ -42,7 +42,7 @@ function MainSection() {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10 pt-10 w-full mx-auto max-w-5xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10 pt-20 w-full mx-auto max-w-5xl">
       {features.map((feature, index) => (
         <Feature key={feature.title} {...feature} index={index} />
       ))}
@@ -66,12 +66,12 @@ const Feature = ({
   return (
     <div
       className={cn(
-        "flex flex-col lg:border-r py-6 relative group/feature dark:border-neutral-800",
+        "flex flex-col lg:border-r py-10 relative group/feature dark:border-neutral-800",
         index === 0 && "lg:border-l dark:border-neutral-800"
       )}
     >
       <div className="group-hover/feature:-translate-y-1 transform-gpu transition-all duration-300 flex flex-col w-full">
-        <div className="relative z-10 mb-3 px-6 text-neutral-600 dark:text-neutral-400">
+        <div className="relative z-10 mb-4 px-6 text-neutral-600 dark:text-neutral-400">
           <Icon
             strokeWidth="1.5"
             className="w-6 h-6 group-hover/feature:scale-90 transition-all will-change-transform"

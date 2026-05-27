@@ -12,7 +12,7 @@ import { Features } from "@/components/ui/features-8";
 
 const FeaturesSection = () => {
   return (
-    <div className="site-container-wide relative  flex flex-col items-center justify-center">
+    <div className="site-container-wide relative my-40 flex flex-col items-center justify-center">
       <Features
         title="Discover the features driving innovation"
         description={

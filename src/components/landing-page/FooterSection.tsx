@@ -4,7 +4,7 @@ import Link from "next/link";
 const FooterSection = () => {
   return (
     <footer
-      className="site-container-wide relative flex flex-col items-center justify-center border-t border-border pb-8 pt-16 lg:pt-24"
+      className="site-container-wide relative flex flex-col items-center justify-center border-t border-border pb-8 pt-16 lg:pt-32"
     >
       {/* Footer Content */}
       <div className="flex w-full flex-col items-start justify-between transition-all md:flex-row md:items-center">
