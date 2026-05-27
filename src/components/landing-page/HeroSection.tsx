@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils";
 const HeroSection = () => {
   return (
     <section
-      className="bg-background text-foreground flex flex-col items-center justify-start transition-all overflow-hidden"
+      className="bg-background text-foreground flex flex-col items-center justify-start px-6 transition-all overflow-hidden xl:px-[15%]"
     >
-      <div className="site-container-wide pt-20 md:pt-24 flex flex-col items-center text-center">
+      <div className="pt-24 flex w-full flex-col items-center text-center">
         {/* Badge */}
         <Link href="/products" className="animate-appear z-10 mb-5 md:mb-10 flex items-center justify-center">
           <AnimatedGradientText>
@@ -44,7 +44,7 @@ const HeroSection = () => {
 
         {/* Actions */}
         <div className="relative z-10 flex animate-appear justify-center gap-4 opacity-0 delay-300 mt-10">
-          <Button size="lg" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-2 font-medium px-6 py-2 h-auto text-base md:text-lg" asChild>
+          <Button size="lg" className="bg-indigo-600 hover:bg-indigo-500 text-white gap-2 font-medium px-6 py-1.5 h-auto text-base md:text-lg" asChild>
             <Link href="/products">
               Discover
               <ArrowRight className="h-5 w-5" />
@@ -53,9 +53,9 @@ const HeroSection = () => {
         </div>
 
         {/* Image with Glow */}
-        <div className="relative mt-5 w-full max-w-4xl">
+        <div className="relative mt-5 w-full max-w-5xl">
           <MockupFrame
-            className="animate-appear opacity-0 delay-700 mx-auto max-w-4xl rounded-xl lg:rounded-[32px] border border-neutral-200/50 backdrop-blur-lg border-neutral-300 bg-neutral-200/20 mt-12 mb-10 p-2 md:p-4"
+            className="animate-appear opacity-0 delay-700 mx-auto max-w-5xl rounded-xl lg:rounded-[32px] border border-neutral-200/50 backdrop-blur-lg border-neutral-300 bg-neutral-200/20 mt-12 mb-10 p-2 md:p-4"
           >
             <Mockup type="responsive" className="rounded-lg lg:rounded-[24px] border p-2 border-neutral-300 bg-white shadow-none">
               <Image
