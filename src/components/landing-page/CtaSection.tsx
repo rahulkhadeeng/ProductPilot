@@ -1,52 +1,56 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
+import { FlickeringGrid } from "@/components/ui/flickering-grid";
 
 const CtaSection = () => {
   return (
-    <div
-      className="site-container flex flex-col items-center justify-center mb-32"
-    >
-      <div
-        className="relative flex w-full flex-col items-center justify-center rounded-2xl border bg-blue-900 py-20 text-center shadow [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))]"
-      >
-        <h2 className="text-white text-3xl min-[450px]:text-4xl sm:text-5xl font-semibold transition-all">
-          From Idea to Launch <br /> Faster Than Ever
-        </h2>
+    <div className="site-container mb-32 flex flex-col items-center justify-center">
+      <div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-border/60 py-20 text-center">
 
-        <p className="text-white mt-6 max-w-[21rem] sm:max-w-md mx-auto text-sm sm:text-base transition-all">
-          Launch and showcase incredible products effortlessly with our
-          intuitive and user friendly platform.
-        </p>
+        {/* FLICKERING GRID */}
+        <FlickeringGrid
+          className="absolute inset-0 z-0"
+          squareSize={3}
+          gridGap={6}
+          color="#6366f1"
+          maxOpacity={0.35}
+          flickerChance={0.05}
+        />
 
-        <button
-          className="group relative z-10 mt-10 flex transform items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-indigo-500 px-6 py-1.5 font-medium text-white transition-all duration-300 active:scale-90"
-        >
-          <span className="group relative z-10 flex items-center gap-2 md:text-lg transition-all">
-            Get Started
-            <ArrowRight
-              className="size-4 group-hover:translate-x-1 transition-all duration-500"
-              strokeWidth={1}
-            />
-          </span>
+        {/* BLUISH GRADIENT GLOW */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-72 bg-gradient-to-b from-indigo-500/20 via-blue-500/10 to-transparent" />
 
-          <div className="ease-&lsqb;cubic-bezier(0.19,1,0.22,1)&rsqb; absolute -left-[75px] -top-[50px] -z-10 h-[155px] w-8 rotate-[35deg] bg-white opacity-20 transition-all duration-500 group-hover:left-[120%]" />
-        </button>
+        {/* RADIAL LIGHT */}
+        <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.15),transparent_65%)]" />
 
-        <Noise />
+        {/* CONTENT */}
+        <div className="relative z-20 flex flex-col items-center">
+          <h2 className="text-3xl font-semibold tracking-tight transition-all min-[450px]:text-4xl sm:text-5xl">
+            From Idea to Launch <br /> Faster Than Ever
+          </h2>
+
+          <p className="mx-auto mt-6 max-w-[21rem] text-sm text-muted-foreground transition-all sm:max-w-md sm:text-base">
+            Launch and showcase incredible products effortlessly with our
+            intuitive and user friendly platform.
+          </p>
+
+          <button className="group relative mt-10 flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-md bg-indigo-500 px-6 py-2 font-medium text-white transition-all duration-300 hover:bg-indigo-400 active:scale-90">
+            <span className="relative z-10 flex items-center gap-2 md:text-lg">
+              Get Started
+              <ArrowRight
+                className="size-4 transition-all duration-500 group-hover:translate-x-1"
+                strokeWidth={1.5}
+              />
+            </span>
+
+            {/* SHINE EFFECT */}
+            <div className="absolute -left-[75px] -top-[50px] z-0 h-[155px] w-8 rotate-[35deg] bg-white/30 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:left-[120%]" />
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default CtaSection;
-
-const Noise = () => {
-  return (
-    <div
-      className="absolute inset-0 w-full h-full scale-[1.2] transform opacity-10 [mask-image:radial-gradient(#fff,transparent,75%)]"
-      style={{
-        backgroundImage: "url(/noise.webp)",
-        backgroundSize: "30%",
-      }}
-    ></div>
-  );
-};

@@ -67,7 +67,7 @@ const thirdColumn = testimonials.slice(6, 9);
 
 const TestimonialSection = () => {
   return (
-    <section className="site-container-wide my-40 relative overflow-hidden">
+    <section className="site-container-wide my-32 relative overflow-hidden">
       <div className="mx-auto text-center max-w-2xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

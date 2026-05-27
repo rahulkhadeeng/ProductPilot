@@ -27,6 +27,7 @@ const FooterSection = () => {
 
           <div className="mt-4 text-sm text-foreground/70">
             Built with passion by{" "}
+            <br></br>
             <Link
               href="https://github.com/rahulkhadeeng"
               className="transition-all duration-300 hover:text-foreground"
