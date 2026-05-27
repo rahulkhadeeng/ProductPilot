@@ -59,7 +59,7 @@ const HeroSection = () => {
           >
             <Mockup type="responsive" className="rounded-lg lg:rounded-[24px] border p-2 border-neutral-300 bg-white shadow-none">
               <Image
-                src="/product-pilot-hero.svg"
+                src="/product-pilot-hero.png"
                 alt="ProductPilot product discovery dashboard preview"
                 width={1920}
                 height={1080}
