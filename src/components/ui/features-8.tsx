@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { Globe } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -19,19 +20,20 @@ type FeaturesProps = {
 
 export function Features({ title, description, features = [] }: FeaturesProps) {
   return (
-    <section className="w-full py-16 md:py-24">
-      <div className="mx-auto max-w-3xl px-5 lg:max-w-5xl">
+    <section className="w-full py-10 md:py-14">
+      <div className="mx-auto max-w-3xl px-4 lg:max-w-5xl">
         <div className="mx-auto max-w-lg text-center">
-          <h2 className="mt-6 text-3xl font-medium transition-all min-[420px]:text-4xl md:text-5xl">
+          <h2 className="mt-4 text-3xl font-medium transition-all min-[180px]:text-4xl md:text-[2.8rem]">
             {title}
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-muted-foreground">
+
+          <p className="mx-auto mt-4 max-w-md text-muted-foreground">
             {description}
           </p>
         </div>
 
-        <div className="relative mt-16">
-          <div className="relative z-10 grid grid-cols-6 gap-3">
+        <div className="relative mt-10">
+          <div className="relative z-10 grid grid-cols-6 gap-2">
             {features.map((feature, index) => (
               <FeatureCard
                 key={`${feature.title}-${index}`}
@@ -65,24 +67,32 @@ function FeatureCard({
     >
       <CardContent
         className={cn(
-          "relative z-10 flex h-full flex-col justify-between gap-10 pt-6",
-          isWide && "sm:grid sm:grid-cols-2 sm:gap-6"
+          "relative z-10 flex h-full flex-col justify-between gap-5 pt-4",
+          isWide && "sm:grid sm:grid-cols-2 sm:gap-4"
         )}
       >
-        <div className="relative z-10 flex flex-col justify-between space-y-10 lg:space-y-6">
+        <div className="relative z-10 flex flex-col justify-between space-y-5 lg:space-y-4">
           <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
             <Icon className="m-auto size-5" strokeWidth={1.5} />
           </div>
-          <div className="space-y-2">
+
+          <div className="space-y-1">
             <h3 className="text-lg font-medium text-zinc-800 transition dark:text-white">
               {feature.title}
             </h3>
-            <p className="text-foreground/75">{feature.info}</p>
+
+            <p className="text-sm text-foreground/75 leading-6">
+              {feature.info}
+            </p>
           </div>
         </div>
 
         {isWide ? (
-          <ChartAccent index={index} />
+          feature.title === "Global Reach" ? (
+            <GlobeAccent />
+          ) : (
+            <ChartAccent index={index} />
+          )
         ) : (
           <PatternAccent pattern={feature.pattern} />
         )}
@@ -101,6 +111,7 @@ function PatternAccent({ pattern }: { pattern?: number[][] }) {
       [10, 5],
       [7, 6],
     ];
+
   const patternId = `feature-pattern-${squares
     .map(([x, y]) => `${x}-${y}`)
     .join("-")}`;
@@ -123,7 +134,9 @@ function PatternAccent({ pattern }: { pattern?: number[][] }) {
             <path d="M.5 20V.5H20" fill="none" />
           </pattern>
         </defs>
+
         <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+
         {squares.map(([x, y]) => (
           <rect
             key={`${x}-${y}`}
@@ -135,6 +148,30 @@ function PatternAccent({ pattern }: { pattern?: number[][] }) {
           />
         ))}
       </svg>
+    </div>
+  );
+}
+
+function GlobeAccent() {
+  return (
+    <div className="relative flex items-center justify-center overflow-hidden rounded-tl-[var(--radius)] border-l border-t bg-gradient-to-br from-background to-muted/30 p-4 sm:ml-3">
+      <div className="relative flex items-center justify-center">
+        <div className="absolute h-28 w-28 rounded-full border border-primary/20 animate-pulse" />
+
+        <div className="absolute h-40 w-40 rounded-full border border-primary/10" />
+
+        <div className="absolute h-52 w-52 rounded-full border border-primary/5" />
+
+        <div className="relative z-10 rounded-full bg-primary/10 p-5 backdrop-blur">
+          <Globe className="size-10 text-primary" strokeWidth={1.5} />
+        </div>
+
+        <div className="absolute left-8 top-10 h-2 w-2 rounded-full bg-primary animate-ping" />
+
+        <div className="absolute right-10 bottom-12 h-2 w-2 rounded-full bg-primary animate-ping delay-300" />
+
+        <div className="absolute left-16 bottom-8 h-2 w-2 rounded-full bg-primary animate-ping delay-700" />
+      </div>
     </div>
   );
 }
@@ -152,6 +189,7 @@ function ChartAccent({ index }: { index: number }) {
         <span className="block size-2 rounded-full border dark:border-white/10 dark:bg-white/10" />
         <span className="block size-2 rounded-full border dark:border-white/10 dark:bg-white/10" />
       </div>
+
       <svg
         aria-hidden="true"
         className="w-full text-indigo-500/80 sm:w-[150%]"
@@ -164,6 +202,7 @@ function ChartAccent({ index }: { index: number }) {
           strokeLinecap="round"
           strokeWidth="3"
         />
+
         <path
           className="text-indigo-500/10"
           d={`${path}V160H1V${index % 2 === 0 ? "126" : "110"}Z`}

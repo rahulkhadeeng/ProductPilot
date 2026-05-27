@@ -66,18 +66,7 @@ const features = [
       [9, 6],
     ],
   },
-  {
-    icon: MessageCircle,
-    title: "Interactive Discussions",
-    info: "Encourage feedback and spark conversations with user comments.",
-    pattern: [
-      [10, 1],
-      [8, 2],
-      [7, 5],
-      [9, 4],
-      [10, 6],
-    ],
-  },
+  
   {
     icon: Globe,
     title: "Global Reach",
@@ -90,18 +79,7 @@ const features = [
       [9, 5],
     ],
   },
-  {
-    icon: Shield,
-    title: "Safe and Secure",
-    info: "Experience a reliable and secure platform built for creators.",
-    pattern: [
-      [8, 1],
-      [10, 3],
-      [7, 6],
-      [9, 2],
-      [8, 5],
-    ],
-  },
+  
   {
     icon: BarChart,
     title: "Analytics Dashboard",
@@ -114,16 +92,5 @@ const features = [
       [9, 5],
     ],
   },
-  {
-    icon: Rocket,
-    title: "Early Feedback",
-    info: "Gather actionable insights from early users to refine your product.",
-    pattern: [
-      [10, 2],
-      [8, 6],
-      [7, 3],
-      [9, 1],
-      [10, 5],
-    ],
-  },
+  
 ];
